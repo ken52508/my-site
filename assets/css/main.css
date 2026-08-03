@@ -177,3 +177,38 @@ footer {
   display: block;
   margin-top: 0.2rem;
 }
+
+/* Hero section */
+.hero {
+  padding-bottom: 1rem;
+}
+
+.hero h1 {
+  margin-bottom: 0.4rem;
+}
+
+.hero .role {
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 0.75rem;
+}
+
+.hero .pitch {
+  max-width: 36rem;
+}
+
+/* Section spacing when stacked on the homepage */
+main .hero + .case-studies,
+main .case-studies + .about {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+/* About links row */
+.about .links {
+  margin-top: 1.25rem;
+}
+
+.about .links a {
+  margin-right: 0.25rem;
+}
