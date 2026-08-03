@@ -11,7 +11,8 @@
   <div class="wrap">
     <a class="logo" href="index.html">my-site</a>
     <nav class="site-nav">
-      <a href="posts/sample-post.html">Posts</a>
+      <a href="#case-studies">Case Studies</a>
+      <a href="#about">About</a>
     </nav>
     <button class="lang-toggle" type="button">中文</button>
   </div>
@@ -19,32 +20,74 @@
 
 <main class="wrap">
   <section class="en">
-    <h1>Hello, this is a placeholder</h1>
-    <p>This homepage is a working shell for a static, plain HTML/CSS/JS engineering blog. Real content will replace this later.</p>
-    <h2>Posts</h2>
-    <ul class="post-list">
-      <li>
-        <a href="posts/sample-post.html">Sample Case Study Post</a>
-        <span class="date">Dummy post used to test layout and language toggle</span>
-      </li>
-    </ul>
+
+    <section class="hero">
+      <h1>Your Name</h1>
+      <p class="role">EE Master\'s Student — PDLC Optical Scattering &amp; Deep Learning Classification Research</p>
+      <p class="pitch">I work at the intersection of applied optics, machine learning, and hardware, and write up the case studies along the way.</p>
+    </section>
+
+    <section class="case-studies" id="case-studies">
+      <h2>Case Studies</h2>
+      <ul class="post-list">
+        <li>
+          <a href="posts/sample-post.html">Robust Classification Under Cross-Session Domain Shift</a>
+          <span class="date">Placeholder entry — full write-up coming soon</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="about" id="about">
+      <h2>About</h2>
+      <p>Placeholder background paragraph: a few sentences on your academic path, research focus, and what got you here. Swap this out for the real version whenever it is ready.</p>
+      <p>Currently exploring roles in customer solutions engineering (CSE), field application engineering (FAE), application engineering, and technical program/product management — anywhere that sits close to both the hardware and the customer.</p>
+      <p class="links">
+        <a href="resume.pdf">Resume</a> ·
+        <a href="https://www.linkedin.com/in/yourname">LinkedIn</a> ·
+        <a href="https://github.com/yourusername">GitHub</a>
+      </p>
+    </section>
+
   </section>
 
   <section class="zh">
-    <h1>Hello，這是一個佔位首頁</h1>
-    <p>這個首頁目前是一個靜態、純 HTML/CSS/JS 工程部落格的骨架，之後會換上真正的內容。</p>
-    <h2>文章</h2>
-    <ul class="post-list">
-      <li>
-        <a href="posts/sample-post.html">範例案例研究文章</a>
-        <span class="date">用來測試排版與語言切換的假文章</span>
-      </li>
-    </ul>
+
+    <section class="hero">
+      <h1>你的名字</h1>
+      <p class="role">電機碩士生 — PDLC 光散射與深度學習分類研究</p>
+      <p class="pitch">我的工作橫跨應用光學、機器學習與硬體之間，並把過程中的案例研究寫下來。</p>
+    </section>
+
+    <section class="case-studies" id="case-studies-zh">
+      <h2>案例研究</h2>
+      <ul class="post-list">
+        <li>
+          <a href="posts/sample-post.html">跨場次域偏移下的穩健分類</a>
+          <span class="date">佔位文章項目 — 完整內容之後補上</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="about" id="about-zh">
+      <h2>關於我</h2>
+      <p>這裡是佔位的背景段落：可以放幾句關於你的求學經歷、研究重點，以及為什麼走到這裡。之後準備好真正的內容時再替換掉。</p>
+      <p>目前在探索的方向包括客戶解決方案工程（CSE）、現場應用工程（FAE）、應用工程，以及技術專案/產品管理——只要是同時貼近硬體與客戶的角色都感興趣。</p>
+      <p class="links">
+        <a href="resume.pdf">履歷</a> ·
+        <a href="https://www.linkedin.com/in/yourname">LinkedIn</a> ·
+        <a href="https://github.com/yourusername">GitHub</a>
+      </p>
+    </section>
+
   </section>
 </main>
 
 <footer class="wrap">
-  <p>&copy; 2026 my-site.</p>
+  <p>
+    <span class="en">Contact:</span><span class="zh">聯絡方式：</span>
+    <a href="mailto:you@example.com">you@example.com</a>
+  </p>
+  <p>&copy; 2026 Your Name.</p>
 </footer>
 
 <script src="assets/js/lang-toggle.js"></script>
