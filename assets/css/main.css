@@ -212,3 +212,28 @@ main .case-studies + .about {
 .about .links a {
   margin-right: 0.25rem;
 }
+
+/* Figures / captions and inline images inside post articles */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+figure {
+  margin: 2rem 0;
+}
+
+figcaption {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Back-to-homepage link used at top/bottom of post pages */
+.back-link {
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem;
+}
