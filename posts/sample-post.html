@@ -63,7 +63,7 @@
 
     <section class="cs-section">
       <h2>The Problem</h2>
-      <p class="cs-section-intro">An image scatters through the optical system and becomes a speckle pattern with no visible structure. The model predicts the original class directly from that speckle pattern.</p>
+      <p class="cs-section-intro">An image scatters through the optical system and becomes a speckle pattern with little directly recognizable structure. The model predicts the original class directly from that speckle pattern.</p>
       <figure>
         <img src="../assets/images/mnist-raw-vs-speckle.jpg" alt="Side-by-side comparison of an original MNIST digit and its speckle pattern after passing through the PDLC optical system.">
         <figcaption>Original image (left) and its speckle pattern (right).</figcaption>
@@ -92,7 +92,7 @@
           <tr><th scope="row">Models</th><td>MLP / CNN / Classification + Reconstruction (dual-task)</td></tr>
           <tr><th scope="row">Seeds</th><td>42 / 123 / 999</td></tr>
           <tr><th scope="row">Evaluation</th><td>Matched-voltage accuracy, 4&times;4 cross-voltage matrix, validation-test gap</td></tr>
-          <tr><th scope="row">Dataset size</th><td>11,000 speckle images per voltage per dataset (10,000 train / 1,000 test), 200&times;200 grayscale</td></tr>
+          <tr><th scope="row">Dataset size</th><td>11,000 speckle images per voltage per dataset (9,000 train / 1,000 validation / 1,000 held-out test), 200&times;200 grayscale</td></tr>
         </tbody>
       </table>
     </section>
@@ -184,13 +184,13 @@
       <p>MLP: fully connected layers on the flattened speckle image. CNN: convolutional layers on the 200&times;200 speckle image. Dual-task: shared encoder, one head for classification, one head for image reconstruction.</p>
 
       <h3>Loss functions</h3>
-      <p>Classification: cross-entropy. Reconstruction: mean squared error. The dual-task model trains on a weighted sum of both, with the reconstruction term weighted lower than the classification term.</p>
+      <p>Classification: cross-entropy. Reconstruction: binary cross-entropy. The dual-task model trains on a weighted sum of both, with the reconstruction term weighted lower than the classification term.</p>
 
       <h3>Training</h3>
-      <p>Adam optimizer. Early stopping on validation loss to avoid overfitting to one acquisition session.</p>
+      <p>Adam optimizer. Early stopping and checkpointing on validation classification accuracy to avoid overfitting to the training data.</p>
 
       <h3>Validation vs. test</h3>
-      <p>Validation accuracy comes from a held-out split of the training-session data. Test accuracy comes from an independently acquired session at the same voltage. The gap between the two is reported alongside accuracy.</p>
+      <p>Validation accuracy comes from a held-out split of the training data. Test accuracy comes from independently acquired test data at the same voltage. The gap between the two is reported alongside accuracy.</p>
 
       <h3>Full cross-voltage results</h3>
       <div class="cs-details-grid">
@@ -254,7 +254,7 @@
 
     <section class="cs-section">
       <h2>問題是什麼</h2>
-      <p class="cs-section-intro">圖片經過光學系統散射後，變成一張肉眼看不出結構的散斑影像。模型直接從這張散斑影像預測原始類別。</p>
+      <p class="cs-section-intro">圖片經過光學系統散射後，變成一張肉眼難以直接辨認出結構的散斑影像。模型直接從這張散斑影像預測原始類別。</p>
       <figure>
         <img src="../assets/images/mnist-raw-vs-speckle.jpg" alt="MNIST 原始數字與經過 PDLC 光學系統散射後的散斑影像對照。">
         <figcaption>原始影像（左）與對應的散斑影像（右）。</figcaption>
@@ -283,7 +283,7 @@
           <tr><th scope="row">模型</th><td>MLP / CNN / 分類＋重建（雙任務）</td></tr>
           <tr><th scope="row">種子</th><td>42 / 123 / 999</td></tr>
           <tr><th scope="row">評估方式</th><td>同電壓準確率、4&times;4 跨電壓矩陣、驗證與測試差距</td></tr>
-          <tr><th scope="row">資料規模</th><td>每個資料集每個電壓 11,000 張散斑影像（訓練 10,000／測試 1,000），200&times;200 灰階</td></tr>
+          <tr><th scope="row">資料規模</th><td>每個資料集每個電壓 11,000 張散斑影像（訓練 9,000／驗證 1,000／保留測試 1,000），200&times;200 灰階</td></tr>
         </tbody>
       </table>
     </section>
@@ -375,13 +375,13 @@
       <p>MLP 用全連接層處理攤平後的散斑影像；CNN 用卷積層處理 200&times;200 散斑影像；雙任務模型共用一個編碼器，分成分類與影像重建兩個輸出頭。</p>
 
       <h3>損失函數</h3>
-      <p>分類用 cross-entropy，重建用 MSE。雙任務模型訓練時把兩者加權相加，重建項的權重低於分類項。</p>
+      <p>分類用 cross-entropy，重建用 BCE（binary cross-entropy）。雙任務模型訓練時把兩者加權相加，重建項的權重低於分類項。</p>
 
       <h3>訓練設定</h3>
-      <p>使用 Adam optimizer，依驗證損失做 early stopping，避免模型過度配適單一次資料擷取的結果。</p>
+      <p>使用 Adam optimizer，依驗證分類準確率做 early stopping 並儲存 checkpoint，避免模型過度配適訓練資料。</p>
 
       <h3>驗證與測試差距</h3>
-      <p>驗證準確率來自訓練資料同一次擷取中切出的資料；測試準確率來自同電壓下另一次獨立擷取的資料。兩者的差距會跟準確率一起列出。</p>
+      <p>驗證準確率來自訓練資料切出的一部分；測試準確率來自同電壓下獨立取得的測試資料。兩者的差距會跟準確率一起列出。</p>
 
       <h3>完整跨電壓結果</h3>
       <div class="cs-details-grid">
