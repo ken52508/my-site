@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Robust Classification Under Cross-Session Domain Shift - my-site</title>
+<title>Robust Classification Under Cross-Session Domain Shift — my-site</title>
 <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
@@ -11,32 +11,119 @@
   <div class="wrap">
     <a class="logo" href="../index.html">my-site</a>
     <nav class="site-nav">
-      <a href="../index.html">Home</a>
+      <a href="../index.html#case-studies">Case Studies</a>
+      <a href="../index.html#about">About</a>
     </nav>
     <button class="lang-toggle" type="button">中文</button>
   </div>
 </header>
 
 <main class="wrap">
-  <section class="en">
-    <h1>Robust Classification Under Cross-Session Domain Shift</h1>
-    <p class="meta">Placeholder entry — used only to verify layout and language toggle. Full write-up coming soon.</p>
-    <p>This is placeholder body text for a case-study article. It exists to confirm that the reading width, typography, and language switch work correctly on an actual post page.</p>
-    <h2>Section heading</h2>
-    <p>More placeholder paragraph text goes here. Real posts will replace this with actual technical write-ups.</p>
-  </section>
+  <a class="back-link" href="../index.html">&larr; Back to home</a>
 
-  <section class="zh">
+  <article class="en">
+
+    <h1>Robust Classification Under Cross-Session Domain Shift</h1>
+    <p class="post-meta">A case study on classifying PDLC speckle images — and what it takes to make the results trustworthy.</p>
+
+    <h2>1. The Problem</h2>
+    <p>Most image classification research assumes the model sees "clean" input — a cat looks like a cat, a shoe looks like a shoe. My research starts from a very different place: the input is a <strong>speckle image</strong> — an original picture (from Fashion-MNIST or MNIST) after passing through a polymer-dispersed liquid crystal (PDLC) optical scattering system, turning into a pattern that looks like pure noise to the human eye.</p>
+    <p>Data from this kind of optical measurement system depends not only on model architecture, but also on the physical state of the system (e.g. driving voltage) and when the data was captured. <strong>The same model can behave differently on data collected in different sessions</strong> — a pattern that shows up in real measurement systems well beyond optics.</p>
+
+    <h2>2. How the System Works</h2>
+    <p>The pipeline: an image is displayed via a spatial light modulator (SLM), passes through a PDLC sample and scatters, a CCD camera records the resulting speckle image, and the image is preprocessed before being fed into a model. An applied voltage tunes the scattering intensity (0V/1V/2V/3V), adding a physical variable on top of the usual dataset axis.</p>
+    <p>Three architectures were compared: an <strong>MLP baseline</strong>, a <strong>CNN baseline</strong>, and a <strong>dual-task model</strong> that classifies and reconstructs the speckle image simultaneously.</p>
+    <p>This setup builds on earlier lab work on the LCPC material's tunable scattering properties, and on an application paper I contributed to as the model-training author, where voltage was used as a hardware-level task-routing mechanism. My thesis extends that work by stress-testing the reliability of same-voltage classification results across architectures, random seeds, and data-acquisition sessions.</p>
+
+    <h2>3. The Anomaly</h2>
+    <p>On MNIST, the dual-task model's cross-voltage results mostly followed the expected pattern — larger train/test voltage gaps meant lower accuracy — <strong>with one exception</strong>: training at 1V and testing at 0V produced 66.2%, 65.7%, and 59.5% across three random seeds (63.8% average), while most other cross-voltage combinations stayed below 32%.</p>
+    <p>All three independently trained models pointed to the same direction, which ruled out a single lucky training run and made the result worth investigating properly.</p>
+
+    <h2>4. How We Investigated</h2>
+    <p><strong>Literature review:</strong> no prior work directly supports low-voltage speckle being easier to recognize across voltages; only indirect evidence that low-voltage-range statistics may be broadly similar.</p>
+    <p><strong>Engineering checks:</strong> confirmed no mismatched file paths, voltage labels, or checkpoints.</p>
+    <p><strong>Reproducibility:</strong> all three seeds showed the same elevation, confirming this is a genuine property of the model/data, not training noise.</p>
+
+    <h2>5. What the Data Shows</h2>
+    <ul>
+      <li>A <strong>reproducible experimental result</strong>: on MNIST, with the dual-task model, the 1V→0V direction consistently outperforms other cross-voltage pairs across three independent runs.</li>
+      <li>The underlying mechanism is an open question, and the natural next step is feature-level analysis.</li>
+    </ul>
+
+    <h2>6. Where the Analysis Goes Next</h2>
+    <p>The result stands as an observation, not yet a mechanism — and that's the right place to stop until the next layer of evidence is in. Three concrete follow-ups would move it forward:</p>
+    <ul>
+      <li><strong>Feature-space analysis</strong> to test whether the dual-task model is actually learning voltage-invariant representations.</li>
+      <li><strong>Testing the low-voltage-advantage hypothesis</strong> against the other low-voltage pairs, since only this one direction shows the effect so far.</li>
+      <li><strong>Direct speckle contrast/haze measurement</strong> to ground any claim about why higher voltages perform differently.</li>
+    </ul>
+    <p>PCC/SSIM similarity analysis and confusion-matrix breakdowns are the planned tools for this next phase.</p>
+
+    <h2>7. Engineering Takeaways</h2>
+    <p>Measurement data often produces patterns that look meaningful. The discipline that matters is:</p>
+    <ol>
+      <li><strong>Confirm reproducibility first</strong> — multiple independent runs, not a single result.</li>
+      <li><strong>Rule out low-level errors</strong> before reaching for physical explanations.</li>
+      <li><strong>Separate what was observed from what's been explained</strong> — and treat the gap as the next task, not a caveat to bury.</li>
+    </ol>
+    <p>The same discipline applies on-site with customers, in production-line troubleshooting, or in cross-team communication: an anomaly is an opportunity to investigate, not a problem to explain away.</p>
+
+  </article>
+
+  <article class="zh">
+
     <h1>跨場次域偏移下的穩健分類</h1>
-    <p class="meta">佔位文章項目，只用來驗證排版與語言切換是否正常，完整內容之後補上。</p>
-    <p>這是文章內容的佔位文字。它的用途是確認閱讀寬度、字體排版，以及語言切換按鈕在實際文章頁面上能正常運作。</p>
-    <h2>小節標題</h2>
-    <p>這裡是更多佔位段落文字，之後會換成真正的技術文章內容。</p>
-  </section>
+    <p class="post-meta">一篇關於 PDLC 散斑影像分類的案例研究——以及讓結果真正站得住腳需要做到哪些事。</p>
+
+    <h2>1. 問題是什麼</h2>
+    <p>多數影像分類研究假設模型看到的是「乾淨」的影像——貓就是貓、鞋子就是鞋子。我的研究情境不一樣：輸入的是<strong>散斑影像</strong>，原始圖片（Fashion-MNIST 或 MNIST）經過聚合物分散液晶（PDLC）光學散射系統後，變成一團肉眼看起來像雜訊的斑點圖樣。</p>
+    <p>這類光學量測系統的資料，不只受模型架構影響，還受光學系統狀態（例如驅動電壓）、資料擷取時間點影響。<strong>同一個模型在不同批次量到的資料上，表現會不一樣</strong>——這是很多實際量測系統（不只光學）都會遇到的狀況。</p>
+
+    <h2>2. 系統怎麼運作</h2>
+    <p>流程是：原始圖片透過空間光調變器（SLM）顯示、光線通過 PDLC 樣品產生散射、CCD 相機拍下散斑影像、經過前處理後送進模型。外加電壓可以調控散射強度（0V/1V/2V/3V），在「換資料集」之外多了一個可調的物理變因。</p>
+    <p>比較了三種模型架構：<strong>MLP 基準模型</strong>、<strong>CNN 基準模型</strong>，以及同時做分類與重建的<strong>雙任務模型</strong>。</p>
+    <p>這套光學系統建立在實驗室較早期的材料研究之上，也對應一篇我負責模型訓練的應用研究——那篇論文把電壓當作硬體層級的任務路由機制。我的碩論接著這個基礎，進一步檢驗同電壓分類結果在不同架構、不同隨機種子、不同資料取得階段下的可靠程度。</p>
+
+    <h2>3. 遇到的異常</h2>
+    <p>在 MNIST 資料集上，雙任務模型的跨電壓結果大致符合預期——訓練與測試電壓差越大、準確率越低——<strong>但有一個例外</strong>：「訓練於 1V、測試於 0V」這個方向，三個隨機種子分別測出 66.2%、65.7%、59.5%（平均 63.8%），其他大多數跨電壓組合準確率都低於 32%。</p>
+    <p>三個獨立訓練的模型都指向同一個方向，排除了單次訓練運氣好的可能，這個結果值得進一步追查。</p>
+
+    <h2>4. 怎麼排查</h2>
+    <p><strong>查文獻：</strong>沒有找到直接支持「低電壓範圍散斑更容易跨電壓辨識」的研究，只有間接證據顯示低電壓範圍的整體統計特性可能較接近。</p>
+    <p><strong>工程面檢查：</strong>確認路徑、電壓標籤、checkpoint 都對得上。</p>
+    <p><strong>可重現性：</strong>三個 seed 一致升高，證實這是模型/資料本身的特性，不是訓練過程的雜訊。</p>
+
+    <h2>5. 數據告訴我們什麼</h2>
+    <ul>
+      <li>一個<strong>可重現的實驗結果</strong>：MNIST、雙任務模型、1V→0V 方向，在三次獨立訓練中都穩定優於其他跨電壓組合。</li>
+      <li>背後機制還是開放問題，下一步自然是往特徵層級去驗證。</li>
+    </ul>
+
+    <h2>6. 下一步驗證方向</h2>
+    <p>目前這是一個觀察結果，還沒到機制層級——在下一輪證據補齊之前，先停在這裡是對的。三個具體的延伸方向：</p>
+    <ul>
+      <li><strong>特徵空間分析</strong>：檢驗雙任務模型是否真的學到了跨電壓一致的特徵表徵。</li>
+      <li><strong>驗證低電壓優勢假說</strong>：拿其他低電壓組合對照，因為目前只有這一個方向出現這個效應。</li>
+      <li><strong>直接量測散斑對比度/霧度</strong>：為任何關於高電壓表現差異的解釋提供實測依據。</li>
+    </ul>
+    <p>PCC/SSIM 相似度分析與混淆矩陣拆解是下一階段規劃使用的工具。</p>
+
+    <h2>7. 對工程實務的啟發</h2>
+    <p>量測資料常常會冒出「看起來有意義」的規律，真正重要的紀律是：</p>
+    <ol>
+      <li><strong>先確認可重現</strong>——多組獨立測試，不靠單一次結果。</li>
+      <li><strong>排除低級錯誤</strong>，再考慮物理或系統性原因。</li>
+      <li><strong>把「觀察到什麼」跟「解釋了什麼」分開</strong>——中間的落差是下一步要做的事，不是要遮掩的缺陷。</li>
+    </ol>
+    <p>這套紀律在客戶現場、產線異常排查、跨部門溝通時同樣適用：異常是值得深挖的機會，不是要想辦法圓過去的問題。</p>
+
+  </article>
+
+  <a class="back-link" href="../index.html">&larr; Back to home</a>
 </main>
 
 <footer class="wrap">
-  <p><a href="../index.html">← Back to home / 回首頁</a></p>
+  <p>&copy; 2026 Cheng-Kai Li.</p>
 </footer>
 
 <script src="../assets/js/lang-toggle.js"></script>
