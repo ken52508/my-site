@@ -26,7 +26,7 @@
 
     <section class="cs-hero">
       <h1>Speckle Image Classification Across Voltage Conditions</h1>
-      <p class="cs-overview">Trained neural network classifiers on speckle images from a voltage-tunable PDLC optical scattering system, then tested how well a model trained at one voltage classifies data captured at another.</p>
+      <p class="cs-overview">Trained and evaluated neural network classifiers on speckle images from a voltage-tunable PDLC optical system.</p>
 
       <div class="cs-tags">
         <span class="cs-tag">Python</span>
@@ -39,8 +39,12 @@
 
       <div class="cs-metrics">
         <div class="cs-metric-card">
+          <div class="cs-metric-value">2</div>
+          <div class="cs-metric-label">Datasets</div>
+        </div>
+        <div class="cs-metric-card">
           <div class="cs-metric-value">4</div>
-          <div class="cs-metric-label">Voltage conditions (0V&ndash;3V)</div>
+          <div class="cs-metric-label">Voltage conditions</div>
         </div>
         <div class="cs-metric-card">
           <div class="cs-metric-value">3</div>
@@ -48,95 +52,87 @@
         </div>
         <div class="cs-metric-card">
           <div class="cs-metric-value">3</div>
-          <div class="cs-metric-label">Random seeds per run</div>
+          <div class="cs-metric-label">Random seeds</div>
         </div>
         <div class="cs-metric-card">
           <div class="cs-metric-value">4&times;4</div>
-          <div class="cs-metric-label">Cross-voltage evaluation matrix</div>
+          <div class="cs-metric-label">Cross-voltage matrix</div>
         </div>
       </div>
+    </section>
+
+    <section class="cs-section">
+      <h2>The Problem</h2>
+      <p class="cs-section-intro">An image scatters through the optical system and becomes a speckle pattern with no visible structure. The model predicts the original class directly from that speckle pattern.</p>
+      <figure>
+        <img src="../assets/images/mnist-raw-vs-speckle.jpg" alt="Side-by-side comparison of an original MNIST digit and its speckle pattern after passing through the PDLC optical system.">
+        <figcaption>Original image (left) and its speckle pattern (right).</figcaption>
+      </figure>
+    </section>
+
+    <section class="cs-section">
+      <h2>Why PDLC</h2>
+      <p class="cs-section-intro">PDLC gives a voltage-controlled scattering condition. That makes voltage a testable variable for how classification results change across physical settings.</p>
     </section>
 
     <section class="cs-section">
       <h2>The System</h2>
-      <div class="cs-flow" role="img" aria-label="Flow: Fashion-MNIST or MNIST image goes through an SLM, a PDLC cell, and a CCD camera to produce a speckle image, which a neural network classifies.">
-        <div class="cs-flow-step">Fashion-MNIST / MNIST</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">SLM</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">PDLC</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">CCD</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">Speckle Image</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">Neural Network</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">Predicted Class</div>
-      </div>
-      <p>An image is shown on a spatial light modulator, scattered through a voltage-tunable PDLC cell, and captured by a CCD camera as a speckle pattern. Voltage controls how much the image scatters, from near-clear at 0V to heavily diffused at 3V. A neural network takes the speckle image and predicts the original class.</p>
+      <figure>
+        <img src="../assets/images/system-overview.png" alt="Diagram of the PDLC speckle pipeline: a Fashion-MNIST or MNIST image is encoded into a speckle pattern through the SLM, PDLC cell, and CCD camera, then decoded back to a predicted class by the neural network.">
+        <figcaption>Encoding an image into a speckle pattern, decoding it back to a predicted class.</figcaption>
+      </figure>
     </section>
 
     <section class="cs-section">
-      <h2>What I Built</h2>
-      <div class="cs-feature-grid">
-        <div class="cs-feature-card">
-          <h3>Optical Data Pipeline</h3>
-          <p>Set up the SLM, PDLC, and CCD chain and collected speckle images at 4 voltage levels.</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>Model Comparison</h3>
-          <p>Trained an MLP baseline, a CNN baseline, and a multi-task model that classifies and reconstructs the image at once, on the same data.</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>Multi-condition Evaluation</h3>
-          <p>Tested every model on all 4 voltage levels, not just the one it trained on. 4&times;4 matrix, 16 train/test pairs per model.</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>Reproducibility</h3>
-          <p>Repeated every training run with 3 random seeds (42, 123, 999) to check results against training noise.</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>Data Quality Analysis</h3>
-          <p>Checked file paths, voltage labels, and checkpoint loading before trusting any accuracy number.</p>
-        </div>
-      </div>
+      <h2>Experimental Design</h2>
+      <table class="cs-table">
+        <tbody>
+          <tr><th scope="row">Datasets</th><td>Fashion-MNIST, MNIST</td></tr>
+          <tr><th scope="row">Voltage</th><td>0V / 1V / 2V / 3V</td></tr>
+          <tr><th scope="row">Models</th><td>MLP / CNN / Classification + Reconstruction (dual-task)</td></tr>
+          <tr><th scope="row">Seeds</th><td>42 / 123 / 999</td></tr>
+          <tr><th scope="row">Evaluation</th><td>Matched-voltage accuracy, 4&times;4 cross-voltage matrix, validation-test gap</td></tr>
+          <tr><th scope="row">Dataset size</th><td>11,000 speckle images per voltage per dataset (10,000 train / 1,000 test), 200&times;200 grayscale</td></tr>
+        </tbody>
+      </table>
     </section>
 
-    <section class="cs-section cs-finding-section">
-      <h2>Most Interesting Finding</h2>
-      <div class="cs-finding-card">
-        <h3>Training at 1V, testing at 0V: 63.8% average accuracy</h3>
+    <section class="cs-section">
+      <h2>Main Results</h2>
+      <figure>
+        <img src="../assets/images/mnist-heatmap-full.jpg" alt="Full 4x4 cross-voltage accuracy heatmap for MNIST across three models.">
+        <figcaption>MNIST, matched and cross-voltage accuracy, three models.</figcaption>
+      </figure>
+      <ul class="cs-findings">
+        <li>CNN and the dual-task model reached higher matched-voltage accuracy than MLP under several conditions.</li>
+        <li>Accuracy varied across voltage conditions and datasets, not uniformly.</li>
+        <li>Validation results and independently acquired test results sometimes differed substantially.</li>
+      </ul>
+    </section>
 
-        <svg class="cs-chart" viewBox="0 0 400 200" role="img" aria-label="Bar chart: seed 42 scored 66.2 percent, seed 123 scored 65.7 percent, seed 999 scored 59.5 percent, average 63.8 percent. A dashed reference line at 32 percent marks where most other voltage combinations land.">
-          <title>1V to 0V cross-voltage accuracy by seed</title>
-          <line class="axis-line" x1="30" y1="170" x2="370" y2="170"></line>
-          <line class="ref-line" x1="30" y1="122" x2="370" y2="122"></line>
-          <text class="muted-label" x="365" y="116" text-anchor="end" font-size="11">32%</text>
-
-          <rect class="bar-fill" x="50" y="70.7" width="60" height="99.3"></rect>
-          <text x="80" y="63" text-anchor="middle" font-size="12">66.2%</text>
-          <text class="muted-label" x="80" y="185" text-anchor="middle" font-size="11">Seed 42</text>
-
-          <rect class="bar-fill" x="130" y="71.5" width="60" height="98.5"></rect>
-          <text x="160" y="64" text-anchor="middle" font-size="12">65.7%</text>
-          <text class="muted-label" x="160" y="185" text-anchor="middle" font-size="11">Seed 123</text>
-
-          <rect class="bar-fill" x="210" y="80.8" width="60" height="89.2"></rect>
-          <text x="240" y="73" text-anchor="middle" font-size="12">59.5%</text>
-          <text class="muted-label" x="240" y="185" text-anchor="middle" font-size="11">Seed 999</text>
-
-          <rect class="bar-avg" x="290" y="74.3" width="60" height="95.7"></rect>
-          <text x="320" y="67" text-anchor="middle" font-size="12">63.8%</text>
-          <text class="muted-label" x="320" y="185" text-anchor="middle" font-size="11">Average</text>
-        </svg>
-        <p class="cs-chart-caption">Dashed line marks where most other train/test voltage pairs land.</p>
-
-        <ul class="cs-finding-list">
-          <li>Seed 42: 66.2% &middot; Seed 123: 65.7% &middot; Seed 999: 59.5%</li>
-          <li>Most other cross-voltage combinations: below 32%</li>
-          <li>Reproduced across three independent training runs, not a training artifact</li>
-        </ul>
+    <section class="cs-section">
+      <h2>One Interesting Observation</h2>
+      <div class="cs-observation-card">
+        <p class="cs-observation-label">1V trained, tested at 0V (MNIST, dual-task model)</p>
+        <div class="cs-mini-metrics">
+          <div class="cs-mini-metric">
+            <span class="cs-mini-value">66.2%</span>
+            <span class="cs-mini-label">Seed 42</span>
+          </div>
+          <div class="cs-mini-metric">
+            <span class="cs-mini-value">65.7%</span>
+            <span class="cs-mini-label">Seed 123</span>
+          </div>
+          <div class="cs-mini-metric">
+            <span class="cs-mini-value">59.5%</span>
+            <span class="cs-mini-label">Seed 999</span>
+          </div>
+          <div class="cs-mini-metric cs-mini-metric-avg">
+            <span class="cs-mini-value">63.8%</span>
+            <span class="cs-mini-label">Mean</span>
+          </div>
+        </div>
+        <p class="cs-observation-note">Same pattern appeared across all three random seeds.</p>
       </div>
     </section>
 
@@ -146,65 +142,74 @@
         <div class="cs-step">
           <div class="cs-step-num">1</div>
           <div>
-            <h3>Verified implementation</h3>
-            <p>Checked file paths, voltage labels, and checkpoint loading. Ruled out a data pipeline bug before looking anywhere else.</p>
+            <h3>Check implementation</h3>
+            <p>Verified file paths, voltage labels, and checkpoints.</p>
           </div>
         </div>
         <div class="cs-step">
           <div class="cs-step-num">2</div>
           <div>
-            <h3>Tested reproducibility</h3>
-            <p>Reran training with three different random seeds. The result held in all three: same direction, similar magnitude.</p>
+            <h3>Repeat experiment</h3>
+            <p>Tested three random seeds.</p>
           </div>
         </div>
         <div class="cs-step">
           <div class="cs-step-num">3</div>
           <div>
-            <h3>Checked possible explanations</h3>
-            <p>Reviewed related work on PDLC scattering behavior at low voltage. Found partial support for low-voltage speckle patterns being more similar to each other, and added a direct measurement to the next-steps list.</p>
+            <h3>Plan next validation</h3>
+            <p>Feature analysis and direct optical measurements planned as follow-up.</p>
           </div>
         </div>
       </div>
     </section>
 
     <section class="cs-section">
-      <h2>What This Project Demonstrates</h2>
-      <div class="cs-capability-grid">
-        <div class="cs-capability-card">
-          <h3>System Thinking</h3>
-          <p>Connected hardware (SLM, PDLC, CCD), data pipeline, and model design into one evaluation, and tracked how a change in one layer affects the others.</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>Experimental Design</h3>
-          <p>Built a 4&times;4 cross-voltage test matrix instead of a single train/test split, so results would hold up under more than one condition.</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>Root-Cause Investigation</h3>
-          <p>Traced an unexpected result through data labels, checkpoints, and prior literature before accepting it as real.</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>Data-Driven Decision Making</h3>
-          <p>Used reproducibility across three seeds as the bar for whether a result was worth reporting.</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>Technical Communication</h3>
-          <p>Documented an open-ended result clearly: what's confirmed, what isn't, and what to check next.</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>Cross-domain Engineering</h3>
-          <p>Worked across optics hardware, data pipelines, and deep learning in one project, translating between the physical setup and the model layer.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="cs-section cs-next-steps">
-      <h2>Next Steps</h2>
-      <ul>
-        <li>Run a feature-space analysis on the multi-task model to see what it learned across voltages.</li>
-        <li>Test whether the same pattern shows up in other low-voltage train/test pairs, not just 1V&rarr;0V.</li>
-        <li>Measure speckle contrast directly instead of inferring it from accuracy alone.</li>
+      <h2>What I Contributed</h2>
+      <ul class="cs-contrib-list">
+        <li><strong>Built the pipeline:</strong> connected optical acquisition, preprocessing, model training, and evaluation.</li>
+        <li><strong>Designed the evaluation:</strong> matched-voltage and 4&times;4 cross-voltage testing across four conditions.</li>
+        <li><strong>Compared models:</strong> MLP, CNN, and classification + reconstruction.</li>
+        <li><strong>Checked reproducibility:</strong> repeated key experiments with three random seeds.</li>
+        <li><strong>Investigated anomalies:</strong> verified the 1V-to-0V result before drawing conclusions.</li>
       </ul>
     </section>
+
+    <details class="cs-details">
+      <summary>Technical details</summary>
+
+      <h3>PDLC material</h3>
+      <p>Polymer-dispersed liquid crystal cell. Scattering strength set by applied voltage, 0V to 3V.</p>
+
+      <h3>Model architecture</h3>
+      <p>MLP: fully connected layers on the flattened speckle image. CNN: convolutional layers on the 200&times;200 speckle image. Dual-task: shared encoder, one head for classification, one head for image reconstruction.</p>
+
+      <h3>Loss functions</h3>
+      <p>Classification: cross-entropy. Reconstruction: mean squared error. The dual-task model trains on a weighted sum of both, with the reconstruction term weighted lower than the classification term.</p>
+
+      <h3>Training</h3>
+      <p>Adam optimizer. Early stopping on validation loss to avoid overfitting to one acquisition session.</p>
+
+      <h3>Validation vs. test</h3>
+      <p>Validation accuracy comes from a held-out split of the training-session data. Test accuracy comes from an independently acquired session at the same voltage. The gap between the two is reported alongside accuracy.</p>
+
+      <h3>Full cross-voltage results</h3>
+      <div class="cs-details-grid">
+        <figure>
+          <img src="../assets/images/mnist-heatmap-full.jpg" alt="Full 4x4 cross-voltage accuracy heatmap for MNIST, averaged across three models.">
+          <figcaption>MNIST, 3-model average accuracy across all 16 train/test voltage pairs.</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/fmnist-heatmap-full.jpg" alt="Full 4x4 cross-voltage accuracy heatmap for Fashion-MNIST, averaged across three models.">
+          <figcaption>Fashion-MNIST, same evaluation. No comparable cross-voltage anomaly.</figcaption>
+        </figure>
+      </div>
+
+      <h3>Optical setup</h3>
+      <figure>
+        <img src="../assets/images/optical-setup.jpg" alt="Optical setup diagram: laser, polarizer, beam splitter, SLM, lens, PDLC sample, CCD camera.">
+        <figcaption>Optical setup: laser, polarizer, beam splitter, SLM, lens, PDLC sample, CCD.</figcaption>
+      </figure>
+    </details>
 
   </div>
 
@@ -212,7 +217,7 @@
 
     <section class="cs-hero">
       <h1>跨電壓條件的散斑影像分類</h1>
-      <p class="cs-overview">訓練神經網路模型對電壓可調的 PDLC 光學散射系統產生的散斑影像進行分類，並測試在某個電壓下訓練的模型，套用到別的電壓資料時分類效果如何。</p>
+      <p class="cs-overview">訓練並評估神經網路模型，對電壓可調的 PDLC 光學系統產生的散斑影像進行分類。</p>
 
       <div class="cs-tags">
         <span class="cs-tag">Python</span>
@@ -225,8 +230,12 @@
 
       <div class="cs-metrics">
         <div class="cs-metric-card">
+          <div class="cs-metric-value">2</div>
+          <div class="cs-metric-label">資料集</div>
+        </div>
+        <div class="cs-metric-card">
           <div class="cs-metric-value">4</div>
-          <div class="cs-metric-label">電壓條件（0V&ndash;3V）</div>
+          <div class="cs-metric-label">電壓條件</div>
         </div>
         <div class="cs-metric-card">
           <div class="cs-metric-value">3</div>
@@ -244,85 +253,77 @@
     </section>
 
     <section class="cs-section">
-      <h2>系統怎麼運作</h2>
-      <div class="cs-flow" role="img" aria-label="流程：Fashion-MNIST 或 MNIST 圖片經過 SLM、PDLC、CCD 後產生散斑影像，再由神經網路做分類。">
-        <div class="cs-flow-step">Fashion-MNIST / MNIST</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">SLM</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">PDLC</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">CCD</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">散斑影像</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">神經網路</div>
-        <span class="cs-flow-arrow" aria-hidden="true">&rarr;</span>
-        <div class="cs-flow-step">預測類別</div>
-      </div>
-      <p>圖片透過空間光調變器（SLM）顯示，經過電壓可調的 PDLC 元件散射後，由 CCD 相機拍下散斑影像。電壓控制散射程度，從 0V 接近清晰到 3V 高度模糊。神經網路直接吃散斑影像，輸出預測的類別。</p>
+      <h2>問題是什麼</h2>
+      <p class="cs-section-intro">圖片經過光學系統散射後，變成一張肉眼看不出結構的散斑影像。模型直接從這張散斑影像預測原始類別。</p>
+      <figure>
+        <img src="../assets/images/mnist-raw-vs-speckle.jpg" alt="MNIST 原始數字與經過 PDLC 光學系統散射後的散斑影像對照。">
+        <figcaption>原始影像（左）與對應的散斑影像（右）。</figcaption>
+      </figure>
     </section>
 
     <section class="cs-section">
-      <h2>做了什麼</h2>
-      <div class="cs-feature-grid">
-        <div class="cs-feature-card">
-          <h3>光學資料蒐集流程</h3>
-          <p>架設 SLM、PDLC、CCD 的量測鏈路，在 4 個電壓下蒐集散斑影像。</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>模型比較</h3>
-          <p>用同一批資料訓練三種架構：MLP 基準模型、CNN 基準模型，以及同時做分類與重建的多任務模型。</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>多條件評估</h3>
-          <p>每個模型都在全部 4 個電壓下測試，不只測訓練時用的那個電壓。4&times;4 矩陣，每個模型共 16 組訓練/測試組合。</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>可重現性</h3>
-          <p>每組設定都用 3 組隨機種子（42、123、999）重複訓練，用來排除訓練雜訊。</p>
-        </div>
-        <div class="cs-feature-card">
-          <h3>資料品質檢查</h3>
-          <p>採信任何準確率數字之前，先確認檔案路徑、電壓標籤、checkpoint 載入都對得上。</p>
-        </div>
-      </div>
+      <h2>為什麼用 PDLC</h2>
+      <p class="cs-section-intro">PDLC 提供一個電壓可調的散射條件。這讓電壓成為一個可測試的變因，用來看分類結果在不同物理條件下會怎麼變化。</p>
     </section>
 
-    <section class="cs-section cs-finding-section">
-      <h2>最有意思的發現</h2>
-      <div class="cs-finding-card">
-        <h3>訓練於 1V、測試於 0V：平均準確率 63.8%</h3>
+    <section class="cs-section">
+      <h2>系統怎麼運作</h2>
+      <figure>
+        <img src="../assets/images/system-overview.png" alt="PDLC 散斑流程圖：Fashion-MNIST 或 MNIST 圖片經過 SLM、PDLC 元件、CCD 相機編碼成散斑影像，再由神經網路解碼成預測類別。">
+        <figcaption>把圖片編碼成散斑影像，再解碼回預測類別。</figcaption>
+      </figure>
+    </section>
 
-        <svg class="cs-chart" viewBox="0 0 400 200" role="img" aria-label="長條圖：seed 42 為 66.2%，seed 123 為 65.7%，seed 999 為 59.5%，平均 63.8%。虛線標出 32% 的參考線，代表其他大多數電壓組合落在的範圍。">
-          <title>1V 到 0V 跨電壓準確率（依種子）</title>
-          <line class="axis-line" x1="30" y1="170" x2="370" y2="170"></line>
-          <line class="ref-line" x1="30" y1="122" x2="370" y2="122"></line>
-          <text class="muted-label" x="365" y="116" text-anchor="end" font-size="11">32%</text>
+    <section class="cs-section">
+      <h2>實驗設計</h2>
+      <table class="cs-table">
+        <tbody>
+          <tr><th scope="row">資料集</th><td>Fashion-MNIST、MNIST</td></tr>
+          <tr><th scope="row">電壓</th><td>0V / 1V / 2V / 3V</td></tr>
+          <tr><th scope="row">模型</th><td>MLP / CNN / 分類＋重建（雙任務）</td></tr>
+          <tr><th scope="row">種子</th><td>42 / 123 / 999</td></tr>
+          <tr><th scope="row">評估方式</th><td>同電壓準確率、4&times;4 跨電壓矩陣、驗證與測試差距</td></tr>
+          <tr><th scope="row">資料規模</th><td>每個資料集每個電壓 11,000 張散斑影像（訓練 10,000／測試 1,000），200&times;200 灰階</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-          <rect class="bar-fill" x="50" y="70.7" width="60" height="99.3"></rect>
-          <text x="80" y="63" text-anchor="middle" font-size="12">66.2%</text>
-          <text class="muted-label" x="80" y="185" text-anchor="middle" font-size="11">Seed 42</text>
+    <section class="cs-section">
+      <h2>主要結果</h2>
+      <figure>
+        <img src="../assets/images/mnist-heatmap-full.jpg" alt="MNIST 完整 4x4 跨電壓準確率熱力圖，三模型平均。">
+        <figcaption>MNIST，同電壓與跨電壓準確率，三種模型。</figcaption>
+      </figure>
+      <ul class="cs-findings">
+        <li>CNN 與雙任務模型在多數同電壓條件下，準確率高於 MLP。</li>
+        <li>準確率隨電壓條件與資料集變動，不是均勻一致的。</li>
+        <li>驗證結果與獨立取得的測試結果，有時候差距不小。</li>
+      </ul>
+    </section>
 
-          <rect class="bar-fill" x="130" y="71.5" width="60" height="98.5"></rect>
-          <text x="160" y="64" text-anchor="middle" font-size="12">65.7%</text>
-          <text class="muted-label" x="160" y="185" text-anchor="middle" font-size="11">Seed 123</text>
-
-          <rect class="bar-fill" x="210" y="80.8" width="60" height="89.2"></rect>
-          <text x="240" y="73" text-anchor="middle" font-size="12">59.5%</text>
-          <text class="muted-label" x="240" y="185" text-anchor="middle" font-size="11">Seed 999</text>
-
-          <rect class="bar-avg" x="290" y="74.3" width="60" height="95.7"></rect>
-          <text x="320" y="67" text-anchor="middle" font-size="12">63.8%</text>
-          <text class="muted-label" x="320" y="185" text-anchor="middle" font-size="11">平均</text>
-        </svg>
-        <p class="cs-chart-caption">虛線標出其他大多數訓練/測試電壓組合落在的範圍。</p>
-
-        <ul class="cs-finding-list">
-          <li>Seed 42：66.2% &middot; Seed 123：65.7% &middot; Seed 999：59.5%</li>
-          <li>其他大多數跨電壓組合：準確率低於 32%</li>
-          <li>三次獨立訓練都重現同樣的結果，不是單次訓練的偶然</li>
-        </ul>
+    <section class="cs-section">
+      <h2>一個有意思的觀察</h2>
+      <div class="cs-observation-card">
+        <p class="cs-observation-label">訓練於 1V、測試於 0V（MNIST，雙任務模型）</p>
+        <div class="cs-mini-metrics">
+          <div class="cs-mini-metric">
+            <span class="cs-mini-value">66.2%</span>
+            <span class="cs-mini-label">Seed 42</span>
+          </div>
+          <div class="cs-mini-metric">
+            <span class="cs-mini-value">65.7%</span>
+            <span class="cs-mini-label">Seed 123</span>
+          </div>
+          <div class="cs-mini-metric">
+            <span class="cs-mini-value">59.5%</span>
+            <span class="cs-mini-label">Seed 999</span>
+          </div>
+          <div class="cs-mini-metric cs-mini-metric-avg">
+            <span class="cs-mini-value">63.8%</span>
+            <span class="cs-mini-label">平均</span>
+          </div>
+        </div>
+        <p class="cs-observation-note">三組隨機種子都出現同樣的規律。</p>
       </div>
     </section>
 
@@ -332,65 +333,74 @@
         <div class="cs-step">
           <div class="cs-step-num">1</div>
           <div>
-            <h3>確認實作沒問題</h3>
-            <p>檢查檔案路徑、電壓標籤、checkpoint 載入，先排除資料流程上的錯誤，再往別的方向查。</p>
+            <h3>確認實作</h3>
+            <p>檢查檔案路徑、電壓標籤、checkpoint。</p>
           </div>
         </div>
         <div class="cs-step">
           <div class="cs-step-num">2</div>
           <div>
-            <h3>測試可重現性</h3>
-            <p>換三組不同的隨機種子重新訓練，三次結果方向一致、數值也相近。</p>
+            <h3>重複實驗</h3>
+            <p>用三組隨機種子重新測試。</p>
           </div>
         </div>
         <div class="cs-step">
           <div class="cs-step-num">3</div>
           <div>
-            <h3>檢查可能的原因</h3>
-            <p>查閱 PDLC 散射相關文獻，找到低電壓範圍散斑統計特性較接近的間接證據，並把直接量測列進下一步要做的事。</p>
+            <h3>規劃下一步驗證</h3>
+            <p>特徵分析與直接光學量測列為後續工作。</p>
           </div>
         </div>
       </div>
     </section>
 
     <section class="cs-section">
-      <h2>這個專案展現的能力</h2>
-      <div class="cs-capability-grid">
-        <div class="cs-capability-card">
-          <h3>系統思維</h3>
-          <p>把硬體（SLM、PDLC、CCD）、資料流程、模型設計串成一個完整的評估流程，清楚每一層的改動會如何影響其他層。</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>實驗設計</h3>
-          <p>設計 4&times;4 跨電壓測試矩陣，而不是單一組訓練/測試切分，讓結果禁得起不只一種條件的檢驗。</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>根因調查</h3>
-          <p>把一個非預期的結果，從資料標籤、checkpoint 到相關文獻一路查下去，確認之後才採信。</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>資料驅動的判斷</h3>
-          <p>用三組種子都能重現，當作一個結果值不值得寫進報告的門檻。</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>技術溝通</h3>
-          <p>把一個還沒有確定機制的結果寫清楚，分開哪些已經確認、哪些還是開放問題。</p>
-        </div>
-        <div class="cs-capability-card">
-          <h3>跨領域工程能力</h3>
-          <p>同時處理光學硬體、資料流程、深度學習模型，在硬體與模型之間來回轉換。</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="cs-section cs-next-steps">
-      <h2>下一步</h2>
-      <ul>
-        <li>對多任務模型做特徵空間分析，看它在不同電壓下實際學到了什麼。</li>
-        <li>驗證同樣的規律是否出現在其他低電壓的訓練/測試組合，不只 1V&rarr;0V。</li>
-        <li>直接量測散斑對比度，而不是只從準確率推論。</li>
+      <h2>我做了什麼</h2>
+      <ul class="cs-contrib-list">
+        <li><strong>建置流程：</strong>串接光學擷取、前處理、模型訓練、評估。</li>
+        <li><strong>設計評估方式：</strong>同電壓與 4&times;4 跨電壓測試，涵蓋四個電壓條件。</li>
+        <li><strong>比較模型：</strong>MLP、CNN、分類＋重建。</li>
+        <li><strong>檢查可重現性：</strong>用三組隨機種子重複關鍵實驗。</li>
+        <li><strong>排查異常：</strong>在下結論前先驗證 1V&rarr;0V 的結果。</li>
       </ul>
     </section>
+
+    <details class="cs-details">
+      <summary>技術細節</summary>
+
+      <h3>PDLC 材料</h3>
+      <p>聚合物分散液晶元件，散射強度由外加電壓控制，範圍 0V 到 3V。</p>
+
+      <h3>模型架構</h3>
+      <p>MLP 用全連接層處理攤平後的散斑影像；CNN 用卷積層處理 200&times;200 散斑影像；雙任務模型共用一個編碼器，分成分類與影像重建兩個輸出頭。</p>
+
+      <h3>損失函數</h3>
+      <p>分類用 cross-entropy，重建用 MSE。雙任務模型訓練時把兩者加權相加，重建項的權重低於分類項。</p>
+
+      <h3>訓練設定</h3>
+      <p>使用 Adam optimizer，依驗證損失做 early stopping，避免模型過度配適單一次資料擷取的結果。</p>
+
+      <h3>驗證與測試差距</h3>
+      <p>驗證準確率來自訓練資料同一次擷取中切出的資料；測試準確率來自同電壓下另一次獨立擷取的資料。兩者的差距會跟準確率一起列出。</p>
+
+      <h3>完整跨電壓結果</h3>
+      <div class="cs-details-grid">
+        <figure>
+          <img src="../assets/images/mnist-heatmap-full.jpg" alt="MNIST 完整 4x4 跨電壓準確率熱力圖，三模型平均。">
+          <figcaption>MNIST，三模型平均準確率，涵蓋全部 16 組訓練/測試電壓組合。</figcaption>
+        </figure>
+        <figure>
+          <img src="../assets/images/fmnist-heatmap-full.jpg" alt="Fashion-MNIST 完整 4x4 跨電壓準確率熱力圖，三模型平均。">
+          <figcaption>Fashion-MNIST，相同評估方式，沒有出現類似的跨電壓異常。</figcaption>
+        </figure>
+      </div>
+
+      <h3>光學架設</h3>
+      <figure>
+        <img src="../assets/images/optical-setup.jpg" alt="光學架設圖：雷射、偏振片、分光鏡、SLM、透鏡、PDLC 樣品、CCD 相機。">
+        <figcaption>光學架設：雷射、偏振片、分光鏡、SLM、透鏡、PDLC 樣品、CCD。</figcaption>
+      </figure>
+    </details>
 
   </div>
 </main>

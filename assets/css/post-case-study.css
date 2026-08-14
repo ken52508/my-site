@@ -15,6 +15,11 @@ main.wrap.case-study-main {
   margin-bottom: 1rem;
 }
 
+.cs-section-intro {
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+
 /* Hero */
 .cs-hero h1 {
   margin-bottom: 0.5rem;
@@ -44,7 +49,7 @@ main.wrap.case-study-main {
 
 .cs-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 1rem;
   margin: 1.5rem 0 0.5rem;
 }
@@ -70,124 +75,86 @@ main.wrap.case-study-main {
   line-height: 1.4;
 }
 
-/* System flow diagram */
-.cs-flow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 1.5rem 0;
-}
-
-.cs-flow-step {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--code-bg);
-  padding: 0.5rem 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  white-space: nowrap;
-}
-
-.cs-flow-arrow {
-  color: var(--muted);
-  font-size: 0.95rem;
-}
-
-/* Feature / capability card grids */
-.cs-feature-grid,
-.cs-capability-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.cs-feature-card,
-.cs-capability-card {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 1rem 1.1rem;
-}
-
-.cs-feature-card h3,
-.cs-capability-card h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1rem;
-}
-
-.cs-feature-card p,
-.cs-capability-card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* Most interesting finding */
-.cs-finding-card {
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 6px;
-  padding: 1.25rem 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.cs-finding-card h3 {
-  margin-top: 0;
-}
-
-.cs-chart {
+/* Experimental design table */
+.cs-table {
   width: 100%;
-  height: auto;
-  max-width: 32rem;
-  display: block;
-  margin: 1rem 0 0.25rem;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.92rem;
 }
 
-.cs-chart .bar-fill {
-  fill: var(--accent);
-  opacity: 0.85;
+.cs-table th,
+.cs-table td {
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
 }
 
-.cs-chart .bar-avg {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-}
-
-.cs-chart .axis-line {
-  stroke: var(--border);
-  stroke-width: 1;
-}
-
-.cs-chart .ref-line {
-  stroke: var(--muted);
-  stroke-width: 1;
-  stroke-dasharray: 4 3;
-}
-
-.cs-chart text {
-  font-family: var(--font-mono);
-  fill: var(--text);
-}
-
-.cs-chart .muted-label {
-  fill: var(--muted);
-}
-
-.cs-chart-caption {
+.cs-table th {
+  width: 32%;
   color: var(--muted);
-  font-size: 0.82rem;
-  margin: 0 0 1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
-.cs-finding-list {
-  margin: 0.75rem 0 0;
+/* Main results findings list */
+.cs-findings {
+  margin: 1.25rem 0 0;
   padding-left: 1.2rem;
 }
 
-.cs-finding-list li {
-  margin: 0.3rem 0;
+.cs-findings li {
+  margin: 0.35rem 0;
+}
+
+/* One interesting observation */
+.cs-observation-card {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  padding: 1.1rem 1.4rem;
+  margin-top: 1.25rem;
+  max-width: 34rem;
+}
+
+.cs-observation-label {
+  margin: 0 0 0.9rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cs-mini-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.cs-mini-metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.cs-mini-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.cs-mini-metric-avg .cs-mini-value {
+  color: var(--accent);
+}
+
+.cs-mini-label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin-top: 0.2rem;
+}
+
+.cs-observation-note {
+  margin: 0.9rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 /* Investigation steps */
@@ -229,25 +196,63 @@ main.wrap.case-study-main {
   font-size: 0.9rem;
 }
 
-/* Next steps */
-.cs-next-steps {
-  border-top: 1px solid var(--border);
-  padding-top: 1.5rem;
-}
-
-.cs-next-steps ul {
-  margin: 0.75rem 0 0;
+/* What I contributed */
+.cs-contrib-list {
+  margin: 1.25rem 0 0;
   padding-left: 1.2rem;
 }
 
-.cs-next-steps li {
-  margin: 0.3rem 0;
-  color: var(--muted);
+.cs-contrib-list li {
+  margin: 0.5rem 0;
 }
 
-@media (max-width: 600px) {
-  .cs-flow-step {
-    font-size: 0.76rem;
-    padding: 0.4rem 0.6rem;
-  }
+.cs-contrib-list strong {
+  font-weight: 600;
+}
+
+/* Collapsible technical details */
+.cs-details {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.5rem 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.cs-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  list-style: revert;
+}
+
+.cs-details summary:hover {
+  color: var(--accent);
+}
+
+.cs-details[open] summary {
+  margin-bottom: 1rem;
+}
+
+.cs-details h3 {
+  font-size: 0.95rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.cs-details h3:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.cs-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.cs-details figure {
+  margin: 0;
+}
+
+.cs-details .cs-details-grid + figure {
+  margin-top: 1.5rem;
 }
