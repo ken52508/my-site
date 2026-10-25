@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>台灣人必答常識題｜你能答對幾題？</title>
+<meta name="description" content="20 題台灣常識挑戰，看看你是觀光客、在地人，還是行走的台灣百科。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="台灣人必答常識題｜你能答對幾題？">
+<meta property="og:description" content="20 題台灣常識挑戰，看看你是觀光客、在地人，還是行走的台灣百科。">
+<meta name="theme-color" content="#16130e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<!-- ANALYTICS: 把 G-XXXXXXXXXX 換成你的 GA4 評估 ID 後，把下面兩行的註解拿掉
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+-->
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+
+/* Layout: one 1:1 "taxi-yellow" quiz board centered on a dark page; header → picture + question → 2×2 answers → fact / next strip. Single deliberate look for recording. */
+:root{
+  color-scheme: dark;
+  --page:#16130e;
+  --board:#ffd23a;
+  --ink:#17140f;
+  --paper:#fffaf0;
+  --ok:#1f9d55;
+  --bad:#e5484d;
+  --soft:#7a6420;
+  --round:'Huninn', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --sans:'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+}
+html,body{height:100%}
+body{background:var(--page); color:var(--paper); font-family:var(--sans); overflow:hidden;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--paper); outline-offset:3px}
+
+.app{height:100%; display:grid; grid-template-rows:1fr auto; gap:10px; padding-block:14px}
+.cell{container-type:size; min-height:0; display:grid; place-items:center}
+.board{
+  --u:calc(min(100cqw, 100cqh) / 100);
+  position:relative; width:min(100cqw, 100cqh); aspect-ratio:1/1; max-width:100%;
+  background:var(--board); color:var(--ink); border-radius:calc(var(--u)*3); overflow:hidden;
+  padding:calc(var(--u)*4.5); display:flex; flex-direction:column; gap:calc(var(--u)*2.6);
+  user-select:none;
+}
+/* subtle 方格紙 texture */
+.board::before{content:""; position:absolute; inset:0; pointer-events:none; opacity:.09;
+  background-image:linear-gradient(var(--ink) 1px, transparent 1px), linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+  background-size:calc(var(--u)*5) calc(var(--u)*5)}
+.board > *{position:relative}
+
+.head{display:flex; align-items:center; justify-content:space-between; gap:calc(var(--u)*2)}
+.pill{font-family:var(--sans); font-weight:900; font-size:calc(var(--u)*3.4); font-variant-numeric:tabular-nums;
+  background:var(--ink); color:var(--board); padding:calc(var(--u)*.9) calc(var(--u)*2.6); border-radius:99px; letter-spacing:.04em}
+.score{font-weight:700; font-size:calc(var(--u)*3.2); font-variant-numeric:tabular-nums}
+.score b{font-weight:900; font-size:1.25em}
+.timer{height:calc(var(--u)*1.2); border-radius:99px; background:color-mix(in oklab, var(--ink) 18%, transparent); overflow:hidden; margin-top:calc(var(--u)*-1)}
+.timer i{display:block; height:100%; width:100%; background:var(--ink); transform-origin:left; border-radius:inherit}
+.timer.low i{background:var(--bad)}
+
+.main{display:grid; grid-template-columns:calc(var(--u)*31) 1fr; gap:calc(var(--u)*4); align-items:center; flex:1; min-height:0}
+.pic{aspect-ratio:1/1; width:100%; background:var(--paper); border:calc(var(--u)*.7) solid var(--ink); border-radius:calc(var(--u)*3);
+  box-shadow:calc(var(--u)*1) calc(var(--u)*1) 0 var(--ink); overflow:hidden}
+.pic svg{width:100%; height:100%; display:block}
+.q{min-width:0}
+.tag{display:inline-block; font-size:calc(var(--u)*2.6); font-weight:700; letter-spacing:.12em; padding:calc(var(--u)*.4) calc(var(--u)*1.6);
+  border:calc(var(--u)*.45) solid var(--ink); border-radius:99px; margin-bottom:calc(var(--u)*1.6)}
+.qtext{font-family:var(--round); font-size:calc(var(--u)*5.6); line-height:1.28; text-wrap:balance; margin:0}
+
+.opts{display:grid; grid-template-columns:1fr 1fr; gap:calc(var(--u)*2.4)}
+.opt{display:flex; align-items:center; gap:calc(var(--u)*2); text-align:left; min-height:calc(var(--u)*13);
+  background:var(--paper); border:calc(var(--u)*.6) solid var(--ink); border-radius:calc(var(--u)*2.4);
+  box-shadow:calc(var(--u)*.8) calc(var(--u)*.8) 0 var(--ink); padding:calc(var(--u)*1.6) calc(var(--u)*2.2);
+  font-weight:700; font-size:calc(var(--u)*3.9); line-height:1.25; transition:transform .08s, box-shadow .08s, background .15s, opacity .15s}
+.opt:hover{transform:translate(calc(var(--u)*-.2), calc(var(--u)*-.2))}
+.opt:active{transform:translate(calc(var(--u)*.6), calc(var(--u)*.6)); box-shadow:calc(var(--u)*.2) calc(var(--u)*.2) 0 var(--ink)}
+.opt .k{flex:none; display:grid; place-items:center; width:calc(var(--u)*6.4); height:calc(var(--u)*6.4); border-radius:50%;
+  background:var(--ink); color:var(--board); font-family:var(--sans); font-weight:900; font-size:calc(var(--u)*3.4)}
+.opt .t{min-width:0}
+.board.done .opt{cursor:default; transform:none}
+.board.done .opt:not(.right):not(.wrong){opacity:.42}
+.opt.right{background:var(--ok); color:#fff}
+.opt.right .k{background:#fff; color:var(--ok)}
+.opt.wrong{background:var(--bad); color:#fff}
+.opt.wrong .k{background:#fff; color:var(--bad)}
+.board.done .opt.right{animation:pop .28s ease-out}
+.opt.wrong{animation:shake .3s}
+@keyframes pop{40%{transform:scale(1.04)}}
+@keyframes shake{25%{transform:translateX(calc(var(--u)*-1))}75%{transform:translateX(calc(var(--u)*1))}}
+
+.foot{display:grid; grid-template-columns:1fr auto; align-items:center; gap:calc(var(--u)*3); min-height:calc(var(--u)*12.5)}
+.fact{font-size:calc(var(--u)*3.15); line-height:1.45; font-weight:500; min-width:0}
+.fact strong{font-family:var(--round); font-weight:400; font-size:1.18em; display:block; margin-bottom:calc(var(--u)*.3)}
+.fact .hint{color:var(--soft); font-weight:700}
+.next{border:0; border-radius:99px; background:var(--ink); color:var(--board); font-weight:900; font-size:calc(var(--u)*4.2);
+  padding:calc(var(--u)*2.6) calc(var(--u)*5); letter-spacing:.06em; white-space:nowrap}
+.next:active{transform:scale(.97)}
+.next[hidden]{display:none}
+
+/* intro / end cards */
+.card{position:absolute; inset:0; z-index:5; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  gap:calc(var(--u)*2.4); padding:calc(var(--u)*7); background:var(--board)}
+.board[data-mode="intro"] .card.intro, .board[data-mode="end"] .card.end{display:flex}
+.card .kick{font-weight:900; font-size:calc(var(--u)*3.2); letter-spacing:.3em; background:var(--ink); color:var(--board); padding:calc(var(--u)*.8) calc(var(--u)*2.6); border-radius:99px}
+.card h1{font-family:var(--round); font-weight:400; font-size:calc(var(--u)*11); line-height:1.08; margin:0; text-wrap:balance}
+.card .sub{font-size:calc(var(--u)*4); font-weight:700}
+.card .icons{display:flex; gap:calc(var(--u)*2.4); margin-block:calc(var(--u)*1.5)}
+.card .icons .pic{width:calc(var(--u)*15)}
+.big{font-family:var(--sans); font-weight:900; font-size:calc(var(--u)*22); line-height:1; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.big small{font-size:.38em; font-weight:700}
+.rank{font-family:var(--round); font-size:calc(var(--u)*7.5); background:var(--ink); color:var(--board); padding:calc(var(--u)*.8) calc(var(--u)*4); border-radius:calc(var(--u)*2)}
+.card .row{display:flex; gap:calc(var(--u)*2.4); margin-top:calc(var(--u)*2)}
+.ghost{background:transparent; color:var(--ink); box-shadow:inset 0 0 0 calc(var(--u)*.6) var(--ink)}
+
+
+.credit{text-align:center; font-size:12px; color:#a99d84}
+.credit a{color:#d9cfb8}
+.share-row{display:flex; flex-wrap:wrap; gap:calc(var(--u)*2.4); justify-content:center; margin-top:calc(var(--u)*1.5)}
+.share-row .next{font-size:calc(var(--u)*3.8); padding:calc(var(--u)*2.4) calc(var(--u)*4.2)}
+.ig{text-decoration:none; display:inline-flex; align-items:center; background:var(--paper); color:var(--ink); box-shadow:inset 0 0 0 calc(var(--u)*.6) var(--ink)}
+.toast{position:fixed; left:50%; top:calc(14px + env(safe-area-inset-top,0px)); transform:translateX(-50%); z-index:50; background:#221d15; color:var(--paper);
+  border:1px solid #3a3326; padding:8px 14px; border-radius:99px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .25s}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="cell">
+    <div class="board" id="board" data-mode="intro">
+      <div class="head">
+        <div class="pill" id="prog">1 / 20</div>
+        <div class="score">答對 <b id="score">0</b> 題</div>
+      </div>
+      <div class="main">
+        <div class="pic" id="pic"></div>
+        <div class="q"><span class="tag" id="tag">簡單</span><p class="qtext" id="qtext"></p></div>
+      </div>
+      <div class="opts" id="opts"></div>
+      <div class="foot">
+        <div class="fact" id="fact"></div>
+        <button class="next" id="next" hidden>下一題 →</button>
+      </div>
+
+      <div class="card intro">
+        <div class="kick">台灣人必答</div>
+        <h1>這 20 題常識<br>你能答對幾題？</h1>
+        <div class="icons" id="introIcons"></div>
+        <button class="next" id="start">開始挑戰</button>
+      </div>
+      <div class="card end">
+        <div class="sub">你答對了</div>
+        <div class="big" id="final">0<small> / 20</small></div>
+        <div class="rank" id="rank"></div>
+        <div class="sub" id="rankLine"></div>
+        <div class="share-row">
+          <button class="next" id="shareBtn">複製我的成績</button>
+          <button class="next ghost" id="again">再玩一次</button>
+          <a class="next ig" id="igBtn" href="#" target="_blank" rel="noopener" hidden>追蹤我的 IG</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="credit" id="credit">每次開始，題目和選項順序都會重新洗牌 · <a href="../">← 更多遊戲</a> · <a href="https://www.instagram.com/whatistruthqq/" target="_blank" rel="noopener">IG</a></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ========== 設定：改這兩行就好 ========== */
+const IG_URL = 'https://www.instagram.com/whatistruthqq/';          // 例：'https://www.instagram.com/你的帳號/'，留空就不顯示 IG 按鈕
+const IG_HANDLE = '@whatistruthqq';       // 例：'@你的帳號'，會出現在分享文字裡
+
+const QUESTIONS = [
+  {img:'mountain', d:1, q:'台灣最高的山是哪一座？', o:['雪山','玉山','合歡山','阿里山'], a:1, f:'玉山主峰 3,952 公尺，比日本富士山（3,776 公尺）還高。'},
+  {img:'truck', d:1, q:'台灣垃圾車最常播的是哪兩首？', o:['卡農、小星星','少女的祈禱、給愛麗絲','土耳其進行曲、月光','結婚進行曲、生日快樂'], a:1, f:'聽到〈少女的祈禱〉或〈給愛麗絲〉，就是該衝出門倒垃圾了。'},
+  {img:'damper', d:3, q:'台北 101 裡那顆巨大的風阻尼器大約多重？', o:['66 公噸','660 公噸','1,600 公噸','6,600 公噸'], a:1, f:'約 660 公噸，掛在 87 到 92 樓之間，颱風和地震時用來減少大樓搖晃。'},
+  {img:'lighthouse', d:3, q:'台灣本島最東邊的「三貂角」在哪個縣市？', o:['宜蘭縣','花蓮縣','新北市','基隆市'], a:2, f:'三貂角在新北市貢寮區，那裡還有一座三貂角燈塔。'},
+  {img:'bill', d:2, q:'新台幣 500 元鈔票背面印的動物是？', o:['帝雉','梅花鹿','台灣黑熊','櫻花鉤吻鮭'], a:1, f:'500 元背面是梅花鹿和大霸尖山；1000 元背面才是帝雉。'},
+  {img:'bubble', d:1, q:'台語「歹勢」是什麼意思？', o:['很壞','不好意思','很累','好厲害'], a:1, f:'「歹勢」就是不好意思、抱歉的意思。'},
+  {img:'river', d:2, q:'台灣最長的河流是？', o:['淡水河','高屏溪','濁水溪','大甲溪'], a:2, f:'濁水溪全長約 187 公里；流域面積最大的則是高屏溪。'},
+  {img:'metro', d:3, q:'台北捷運第一條通車的路線是？', o:['淡水線','板南線','木柵線','新店線'], a:2, f:'木柵線 1996 年通車，就是現在文湖線的一部分。'},
+  {img:'bear', d:1, q:'台灣黑熊胸前的白色斑紋是什麼形狀？', o:['圓形','V 字形','星形','愛心形'], a:1, f:'胸前的 V 字也像一彎新月，所以台灣黑熊又被叫做「月熊」。'},
+  {img:'phone', d:2, q:'從國外打電話回台灣，國碼是多少？', o:['+852','+886','+86','+82'], a:1, f:'台灣是 +886；+852 是香港，+82 是韓國。'},
+  {img:'pin', d:2, q:'台灣唯一「不靠海」的縣是？', o:['嘉義縣','南投縣','苗栗縣','雲林縣'], a:1, f:'南投縣是台灣唯一不靠海的縣，日月潭和合歡山都在這裡。'},
+  {img:'receipt', d:1, q:'統一發票多久開獎一次？', o:['每個月','每兩個月','每三個月','每半年'], a:1, f:'每兩個月開獎一次，在單數月的 25 日公布。'},
+  {img:'fish', d:2, q:'被稱為台灣「國寶魚」的是？', o:['虱目魚','吳郭魚','櫻花鉤吻鮭','黑鮪魚'], a:2, f:'櫻花鉤吻鮭住在台中武陵的七家灣溪，是冰河時期留下來的陸封型鮭魚。'},
+  {img:'city', d:2, q:'台灣目前有幾個直轄市？', o:['4 個','5 個','6 個','7 個'], a:2, f:'台北、新北、桃園、台中、台南、高雄，一共 6 個。'},
+  {img:'plug', d:2, q:'台灣一般家用插座的電壓是？', o:['100V','110V','220V','240V'], a:1, f:'台灣家用電是 110V、60Hz，出國帶電器要先看清楚電壓。'},
+  {img:'island', d:3, q:'台灣（含離島）的面積大約多大？', o:['約 1.2 萬平方公里','約 3.6 萬平方公里','約 6.3 萬平方公里','約 36 萬平方公里'], a:1, f:'大約 3.6 萬平方公里，差不多是日本面積的十分之一。'},
+  {img:'bird', d:2, q:'2007 年網路票選出來的台灣「國鳥」是？', o:['帝雉','台灣藍鵲','黑面琵鷺','八色鳥'], a:1, f:'台灣藍鵲拿下票選第一，長長的藍尾巴是牠的招牌。'},
+  {img:'road', d:2, q:'國道一號又叫做什麼？', o:['中山高','福爾摩沙高','北宜高','南二高'], a:0, f:'國道一號是中山高速公路；福爾摩沙高速公路是國道三號。'},
+  {img:'hsr', d:3, q:'台灣高鐵是哪一年正式通車？', o:['2003 年','2007 年','2010 年','2012 年'], a:1, f:'台灣高鐵在 2007 年通車，西部從此進入一日生活圈。'},
+  {img:'crowd', d:1, q:'台灣人口最多的城市是？', o:['台北市','新北市','台中市','高雄市'], a:1, f:'新北市人口約 400 萬，是全台人口最多的城市。'},
+];
+const LEVEL = ['', '簡單', '中等', '困難'];
+const RANKS = [
+  [0, '觀光客', '歡迎來台灣玩！'],
+  [8, '在地人', '基本常識沒問題'],
+  [14, '台灣通', '朋友有問題都問你'],
+  [18, '行走的台灣百科', '請收下我的膝蓋'],
+];
+
+/* ---------- 插圖（原創 SVG） ---------- */
+const C = {ink:'#17140f', y:'#ffd23a', p:'#fffaf0', r:'#e5484d', g:'#2f9e5b', b:'#3a7bd5', lb:'#a9d6f2', br:'#8a5a2b', pk:'#f6a3b6', gr:'#9a9488', o:'#f08a24'};
+const S = `stroke="${C.ink}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"`;
+const ART = {
+  mountain:`<rect width="120" height="120" fill="${C.lb}"/><circle cx="90" cy="30" r="11" fill="${C.y}" ${S}/>
+    <path d="M-4 104 L44 34 L70 70 L84 52 L124 104Z" fill="${C.g}" ${S}/><path d="M44 34 L34 50 L42 47 L48 54 L55 45Z" fill="${C.p}" ${S}/>
+    <rect y="102" width="120" height="20" fill="${C.br}" ${S}/>`,
+  truck:`<rect width="120" height="120" fill="${C.lb}"/><rect x="14" y="52" width="58" height="36" rx="4" fill="${C.y}" ${S}/>
+    <path d="M72 62 H94 L106 76 V88 H72Z" fill="${C.p}" ${S}/><path d="M78 66 H92 L100 76 H78Z" fill="${C.lb}" ${S}/>
+    <circle cx="32" cy="90" r="9" fill="${C.ink}"/><circle cx="90" cy="90" r="9" fill="${C.ink}"/><circle cx="32" cy="90" r="3" fill="${C.p}"/><circle cx="90" cy="90" r="3" fill="${C.p}"/>
+    <path d="M36 20 V40" ${S}/><path d="M36 20 L50 16 V34" ${S} fill="none"/><ellipse cx="32" cy="41" rx="5" ry="4" fill="${C.ink}"/><ellipse cx="46" cy="35" rx="5" ry="4" fill="${C.ink}"/>
+    <path d="M70 22 V40" ${S}/><ellipse cx="66" cy="41" rx="5" ry="4" fill="${C.ink}"/><path d="M70 22 Q78 26 76 32" fill="none" ${S}/>`,
+  damper:`<rect width="120" height="120" fill="${C.lb}"/><path d="M60 6 V22" ${S}/>
+    ${[0,1,2,3,4,5,6].map(i=>`<path d="M${40-i*.6} ${32+i*11} L${44} ${22+i*11} H76 L${80+i*.6} ${32+i*11}Z" fill="${C.p}" ${S}/>`).join('')}
+    <rect x="44" y="100" width="32" height="20" fill="${C.p}" ${S}/>
+    <path d="M60 34 V58" ${S}/><circle cx="60" cy="66" r="10" fill="${C.y}" ${S}/>`,
+  lighthouse:`<rect width="120" height="120" fill="${C.lb}"/><path d="M8 34 L44 28 M8 22 L44 26 M112 34 L76 28 M112 22 L76 26" stroke="${C.y}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M46 40 H74 L80 100 H40Z" fill="${C.p}" ${S}/><path d="M44 58 H76 L77.5 72 H42.5Z" fill="${C.r}" ${S}/>
+    <rect x="48" y="20" width="24" height="20" rx="3" fill="${C.y}" ${S}/><path d="M44 20 L60 8 L76 20Z" fill="${C.r}" ${S}/>
+    <path d="M0 102 Q15 94 30 102 T60 102 T90 102 T120 102 V120 H0Z" fill="${C.b}" ${S}/>`,
+  bill:`<rect width="120" height="120" fill="${C.lb}"/><g transform="rotate(-8 60 60)"><rect x="12" y="32" width="96" height="56" rx="5" fill="#d9a45a" ${S}/>
+    <rect x="20" y="40" width="80" height="40" rx="3" fill="none" stroke="${C.ink}" stroke-width="2" opacity=".5"/>
+    <text x="60" y="68" text-anchor="middle" font-family="Noto Sans TC, sans-serif" font-weight="900" font-size="24" fill="${C.ink}">500</text>
+    <circle cx="96" cy="44" r="4" fill="${C.ink}"/></g>`,
+  bubble:`<rect width="120" height="120" fill="${C.pk}"/><path d="M18 26 H102 A8 8 0 0 1 110 34 V74 A8 8 0 0 1 102 82 H52 L34 98 V82 H18 A8 8 0 0 1 10 74 V34 A8 8 0 0 1 18 26Z" fill="${C.p}" ${S}/>
+    <text x="60" y="64" text-anchor="middle" font-family="Huninn, Noto Sans TC, sans-serif" font-size="26" fill="${C.ink}">歹勢</text>`,
+  river:`<rect width="120" height="120" fill="${C.g}"/><path d="M-6 40 Q30 30 50 52 T126 66 V96 Q90 82 62 90 T-6 74Z" fill="${C.b}" ${S}/>
+    <path d="M14 56 Q24 52 32 58 M66 72 Q76 68 86 74" fill="none" stroke="${C.p}" stroke-width="3" stroke-linecap="round"/>`,
+  metro:`<rect width="120" height="120" fill="${C.lb}"/><rect x="26" y="18" width="68" height="76" rx="14" fill="${C.p}" ${S}/>
+    <rect x="34" y="28" width="52" height="28" rx="5" fill="${C.b}" ${S}/><rect x="26" y="64" width="68" height="8" fill="${C.br}"/>
+    <circle cx="40" cy="82" r="5" fill="${C.y}" ${S}/><circle cx="80" cy="82" r="5" fill="${C.y}" ${S}/>
+    <path d="M34 94 L24 112 M86 94 L96 112 M18 112 H102" ${S}/>`,
+  bear:`<rect width="120" height="120" fill="${C.g}"/><path d="M22 120 Q22 70 60 70 Q98 70 98 120Z" fill="${C.ink}"/>
+    <path d="M42 84 L60 102 L78 84 L72 82 L60 94 L48 82Z" fill="${C.p}"/>
+    <circle cx="36" cy="30" r="10" fill="${C.ink}"/><circle cx="84" cy="30" r="10" fill="${C.ink}"/><circle cx="60" cy="48" r="28" fill="${C.ink}"/>
+    <ellipse cx="60" cy="58" rx="13" ry="10" fill="${C.br}"/><ellipse cx="60" cy="54" rx="5" ry="3.5" fill="${C.ink}"/>
+    <circle cx="49" cy="42" r="3" fill="${C.p}"/><circle cx="71" cy="42" r="3" fill="${C.p}"/>`,
+  phone:`<rect width="120" height="120" fill="${C.pk}"/><rect x="34" y="10" width="52" height="100" rx="10" fill="${C.ink}"/>
+    <rect x="39" y="20" width="42" height="74" rx="4" fill="${C.p}"/>
+    <text x="60" y="62" text-anchor="middle" font-family="Noto Sans TC, sans-serif" font-weight="900" font-size="14" fill="${C.ink}">+???</text>
+    <circle cx="60" cy="102" r="3.5" fill="${C.p}"/>`,
+  pin:`<rect width="120" height="120" fill="${C.lb}"/><path d="M-4 106 L30 60 L50 84 L72 50 L124 106Z" fill="${C.g}" ${S}/>
+    <path d="M60 96 C44 74 36 62 36 48 A24 24 0 0 1 84 48 C84 62 76 74 60 96Z" fill="${C.r}" ${S}/><circle cx="60" cy="48" r="9" fill="${C.p}" ${S}/>`,
+  receipt:`<rect width="120" height="120" fill="${C.lb}"/><path d="M30 10 H90 V106 L82 100 L74 106 L66 100 L58 106 L50 100 L42 106 L34 100 L30 104Z" fill="${C.p}" ${S}/>
+    <path d="M40 26 H80 M40 38 H70 M40 50 H76" stroke="${C.ink}" stroke-width="3" stroke-linecap="round"/>
+    <text x="60" y="80" text-anchor="middle" font-family="Noto Sans TC, sans-serif" font-weight="900" font-size="15" fill="${C.r}">12345678</text>`,
+  fish:`<rect width="120" height="120" fill="${C.b}"/><path d="M14 62 Q44 30 84 52 L106 36 L102 62 L106 88 L84 72 Q44 94 14 62Z" fill="${C.pk}" ${S}/>
+    <circle cx="30" cy="58" r="3.5" fill="${C.ink}"/>${[[46,52],[56,62],[66,50],[70,66],[52,72]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.5" fill="${C.ink}" opacity=".7"/>`).join('')}
+    <circle cx="22" cy="28" r="4" fill="none" stroke="${C.p}" stroke-width="2.5"/><circle cx="34" cy="18" r="3" fill="none" stroke="${C.p}" stroke-width="2.5"/>`,
+  city:`<rect width="120" height="120" fill="${C.lb}"/>${[[8,58,16],[26,36,16],[44,48,14],[60,20,16],[78,44,15],[95,62,17]].map(([x,y,w],i)=>
+    `<rect x="${x}" y="${y}" width="${w}" height="${110-y}" fill="${[C.p,C.y,C.pk,C.p,C.y,C.pk][i]}" ${S}/>`).join('')}
+    <rect y="104" width="120" height="16" fill="${C.gr}" ${S}/>`,
+  plug:`<rect width="120" height="120" fill="${C.y}"/><rect x="20" y="20" width="80" height="80" rx="14" fill="${C.p}" ${S}/>
+    <rect x="42" y="42" width="7" height="24" rx="2" fill="${C.ink}"/><rect x="71" y="42" width="7" height="24" rx="2" fill="${C.ink}"/>
+    <path d="M52 76 L62 76 L56 86 L66 86" fill="none" stroke="${C.r}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>`,
+  island:`<rect width="120" height="120" fill="${C.b}"/><path d="M78 10 C88 20 92 42 86 62 C80 82 66 102 54 112 C48 98 40 82 40 62 C40 40 60 16 78 10Z" fill="${C.g}" ${S}/>
+    <path d="M10 104 H40 M10 98 V110 M40 98 V110" ${S} stroke="${C.p}"/>`,
+  bird:`<rect width="120" height="120" fill="${C.lb}"/><path d="M20 40 L66 74" stroke="${C.ink}" stroke-width="3.5"/>
+    <path d="M62 72 L18 104 L26 108 L70 78Z" fill="${C.b}" ${S}/><path d="M18 104 L26 108 L22 112 L14 108Z" fill="${C.p}" ${S}/>
+    <ellipse cx="74" cy="64" rx="22" ry="15" fill="${C.b}" ${S}/><circle cx="90" cy="44" r="12" fill="${C.ink}"/>
+    <path d="M100 44 L112 48 L100 50Z" fill="${C.r}" ${S}/><circle cx="92" cy="42" r="2.5" fill="${C.y}"/>`,
+  road:`<rect width="120" height="120" fill="${C.g}"/><rect width="120" height="46" fill="${C.lb}"/><path d="M48 46 H72 L104 120 H16Z" fill="${C.gr}" ${S}/>
+    <path d="M60 52 V62 M60 72 V84 M60 96 V112" stroke="${C.p}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M86 12 H112 V30 Q112 40 99 44 Q86 40 86 30Z" fill="${C.b}" ${S}/><text x="99" y="33" text-anchor="middle" font-family="Noto Sans TC, sans-serif" font-weight="900" font-size="16" fill="${C.p}">1</text>`,
+  hsr:`<rect width="120" height="120" fill="${C.lb}"/><path d="M6 80 H92 Q116 78 116 66 Q100 50 70 48 H6Z" fill="${C.p}" ${S}/>
+    <path d="M6 70 H108" stroke="${C.o}" stroke-width="6"/><path d="M76 54 Q96 56 104 64 H76Z" fill="${C.ink}"/>
+    <rect x="16" y="54" width="12" height="9" rx="2" fill="${C.ink}"/><rect x="34" y="54" width="12" height="9" rx="2" fill="${C.ink}"/><rect x="52" y="54" width="12" height="9" rx="2" fill="${C.ink}"/>
+    <path d="M0 92 H120" ${S}/>`,
+  crowd:`<rect width="120" height="120" fill="${C.pk}"/>${[[22,70,C.y],[50,62,C.b],[78,70,C.g],[100,64,C.y],[36,88,C.p],[64,90,C.r],[92,92,C.p]].map(([x,y,c])=>
+    `<path d="M${x-14} ${y+40} Q${x-14} ${y+12} ${x} ${y+12} Q${x+14} ${y+12} ${x+14} ${y+40}Z" fill="${c}" ${S}/><circle cx="${x}" cy="${y}" r="9" fill="${C.p}" ${S}/>`).join('')}`,
+};
+const svg = k => `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${ART[k] || ''}</svg>`;
+
+/* ---------- 數據追蹤（有接 GA4 才會送出） ---------- */
+function track(name, params){ try{ if(typeof window.gtag === 'function') window.gtag('event', name, params || {}); }catch(e){} }
+
+/* ---------- 遊戲 ---------- */
+const $ = id => document.getElementById(id);
+const board = $('board');
+let deck = [], idx = -1, picked = null, score = 0;
+$('introIcons').innerHTML = ['mountain','bear','hsr'].map(k => `<div class="pic">${svg(k)}</div>`).join('');
+if(IG_URL){ $('igBtn').href = IG_URL; $('igBtn').hidden = false; }
+
+function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function newDeck(){
+  deck = shuffle(QUESTIONS.map((q, n) => { const right = q.o[q.a]; const o = shuffle([...q.o]); return {...q, n, o, a:o.indexOf(right)}; }));
+  const e = deck.findIndex(q => q.d === 1); if(e > 0) [deck[0], deck[e]] = [deck[e], deck[0]];
+}
+function rankFor(s, n){ return [...RANKS].reverse().find(([min]) => s >= Math.round(min * n / 20)); }
+function render(){
+  const n = deck.length || QUESTIONS.length;
+  board.dataset.mode = idx < 0 ? 'intro' : idx >= n ? 'end' : 'play';
+  board.classList.toggle('done', picked !== null);
+  $('score').textContent = score;
+  $('credit').hidden = idx >= 0;
+  if(idx >= n){
+    $('final').innerHTML = `${score}<small> / ${n}</small>`;
+    const r = rankFor(score, n); $('rank').textContent = r[1]; $('rankLine').textContent = r[2];
+    return;
+  }
+  if(idx < 0) return;
+  const q = deck[idx];
+  $('prog').textContent = `${idx + 1} / ${n}`;
+  $('pic').innerHTML = svg(q.img);
+  $('tag').textContent = LEVEL[q.d];
+  $('qtext').textContent = q.q;
+  $('opts').innerHTML = q.o.map((t, i) => {
+    const cls = picked === null ? '' : i === q.a ? 'right' : i === picked ? 'wrong' : '';
+    return `<button class="opt ${cls}" data-i="${i}" ${picked !== null ? 'tabindex="-1"' : ''}><span class="k">${'ABCD'[i]}</span><span class="t">${t}</span></button>`;
+  }).join('');
+  if(picked === null){ $('fact').innerHTML = '<span class="hint">選一個答案</span>'; $('next').hidden = true; }
+  else {
+    $('fact').innerHTML = `<strong>${picked === q.a ? '答對了！' : '答案是 ' + 'ABCD'[q.a]}</strong>${q.f}`;
+    $('next').hidden = false; $('next').textContent = idx === n - 1 ? '看結果 →' : '下一題 →';
+  }
+}
+function choose(i){
+  if(board.dataset.mode !== 'play' || picked !== null) return;
+  const q = deck[idx]; picked = i; const ok = i === q.a; if(ok) score++;
+  track('question_answered', {question_no: idx + 1, question_id: 'q' + (q.n + 1), question_text: q.q, correct: ok});
+  render();
+}
+function start(){ newDeck(); idx = 0; score = 0; picked = null; track('quiz_start'); render(); }
+function go(){
+  const m = board.dataset.mode;
+  if(m === 'intro') return start();
+  if(m === 'play' && picked !== null){
+    idx++; picked = null; render();
+    if(idx >= deck.length){ const r = rankFor(score, deck.length); track('quiz_complete', {score, total: deck.length, rank: r[1]}); }
+  }
+}
+function shareText(){
+  const r = rankFor(score, deck.length);
+  return `我在「台灣人必答常識題」答對 ${score}/${deck.length} 題，是「${r[1]}」！你能答對幾題？\n${location.href.split('#')[0]}${IG_HANDLE ? '\n' + IG_HANDLE : ''}`;
+}
+async function share(){
+  const text = shareText(); track('share_click', {score});
+  try{ if(navigator.share){ await navigator.share({text}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
+  try{ await navigator.clipboard.writeText(text); toast('已複製，貼到限動或留言吧！'); }
+  catch(e){ toast('複製失敗，請手動截圖分享'); }
+}
+$('opts').addEventListener('click', e => { const b = e.target.closest('.opt'); if(b) choose(+b.dataset.i); });
+$('next').onclick = go; $('start').onclick = go;
+$('again').onclick = () => { track('play_again'); start(); };
+$('shareBtn').onclick = share;
+$('igBtn').addEventListener('click', () => track('ig_click'));
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if(['1','2','3','4'].includes(k)) choose(+k - 1);
+  else if(['a','b','c','d'].includes(k)) choose('abcd'.indexOf(k));
+  else if(e.code === 'Space' || k === 'enter' || k === 'arrowright'){ if(e.target.tagName === 'A') return; e.preventDefault(); go(); }
+});
+let tt; function toast(m){ const el = $('toast'); el.textContent = m; el.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 2200); }
+render();
+</script>
+</body>
+</html>
