@@ -128,6 +128,29 @@ button{font:inherit; color:inherit; cursor:pointer}
 .toast{position:fixed; left:50%; top:calc(14px + env(safe-area-inset-top,0px)); transform:translateX(-50%); z-index:50; background:#221d15; color:var(--paper);
   border:1px solid #3a3326; padding:8px 14px; border-radius:99px; font-size:13px; opacity:0; pointer-events:none; transition:opacity .25s}
 .toast.show{opacity:1}
+.board[data-mode="end"] .card.end{justify-content:flex-start; overflow-y:auto; gap:calc(var(--u)*1.3); padding:calc(var(--u)*4) calc(var(--u)*5) calc(var(--u)*3.5)}
+.card.end > :first-child{margin-top:auto}
+.card.end > :last-child{margin-bottom:auto}
+.end .big{font-size:calc(var(--u)*12)}
+.end .rank{font-size:calc(var(--u)*5.4)}
+.vs{font-weight:900; font-size:calc(var(--u)*3.6); background:var(--paper); border:calc(var(--u)*.5) solid var(--ink); border-radius:calc(var(--u)*2); padding:calc(var(--u)*1) calc(var(--u)*3)}
+.share-row .next{font-size:calc(var(--u)*3.4); padding:calc(var(--u)*2.1) calc(var(--u)*3.6)}
+.mini{width:100%; display:grid; gap:calc(var(--u)*1); padding-top:calc(var(--u)*1.5); border-top:calc(var(--u)*.4) dashed color-mix(in oklab, var(--ink) 35%, transparent)}
+.mini .lbl{font-weight:900; font-size:calc(var(--u)*3.2)}
+.chips{display:flex; flex-wrap:wrap; gap:calc(var(--u)*1.6); justify-content:center}
+.chip{border:calc(var(--u)*.45) solid var(--ink); background:var(--paper); color:var(--ink); border-radius:99px; font-weight:700; font-size:calc(var(--u)*3.1); padding:calc(var(--u)*1.1) calc(var(--u)*2.6)}
+.chip.on{background:var(--ink); color:var(--board)}
+.chips.done .chip:not(.on){opacity:.4}
+.emoji .chip{font-size:calc(var(--u)*5); padding:calc(var(--u)*.6) calc(var(--u)*2.6)}
+.tiny{font-size:calc(var(--u)*2.8); color:var(--soft); font-weight:700}
+.tiny a, .flag{color:var(--soft); text-decoration:underline; background:none; border:0; padding:0; font:inherit; cursor:pointer}
+.flag{margin-left:auto; margin-right:calc(var(--u)*1); font-size:calc(var(--u)*2.8); font-weight:700}
+.vsbar{font-weight:900; font-size:calc(var(--u)*3.8); background:var(--paper); border:calc(var(--u)*.5) solid var(--ink); border-radius:calc(var(--u)*2); padding:calc(var(--u)*1.2) calc(var(--u)*3)}
+.suggest-row{display:flex; gap:calc(var(--u)*1.2); margin-top:calc(var(--u)*1.2)}
+.suggest-row input{flex:1; min-width:0; border:calc(var(--u)*.45) solid var(--ink); border-radius:99px; background:var(--paper); color:var(--ink);
+  font:inherit; font-weight:700; font-size:calc(var(--u)*3); padding:calc(var(--u)*1.1) calc(var(--u)*2.2)}
+.suggest-row input::placeholder{color:var(--soft); font-weight:500}
+.suggest-row .next{font-size:calc(var(--u)*3); padding:calc(var(--u)*1.1) calc(var(--u)*2.6)}
 @media (prefers-reduced-motion:reduce){ *{transition:none !important; animation:none !important} }
 
 </style>
@@ -138,6 +161,7 @@ button{font:inherit; color:inherit; cursor:pointer}
     <div class="board" id="board" data-mode="intro">
       <div class="head">
         <div class="pill" id="prog">1 / 20</div>
+        <button class="flag" id="flag" hidden>這題怪怪的？</button>
         <div class="score">答對 <b id="score">0</b> 題</div>
       </div>
       <div class="main">
@@ -153,6 +177,7 @@ button{font:inherit; color:inherit; cursor:pointer}
       <div class="card intro">
         <div class="kick">台灣人必答</div>
         <h1>這 20 題常識<br>你能答對幾題？</h1>
+        <div class="vsbar" id="vsIntro" hidden></div>
         <div class="icons" id="introIcons"></div>
         <button class="next" id="start">開始挑戰</button>
       </div>
@@ -161,15 +186,29 @@ button{font:inherit; color:inherit; cursor:pointer}
         <div class="big" id="final">0<small> / 20</small></div>
         <div class="rank" id="rank"></div>
         <div class="sub" id="rankLine"></div>
+        <div class="vs" id="vsResult" hidden></div>
         <div class="share-row">
-          <button class="next" id="shareBtn">複製我的成績</button>
+          <button class="next" id="shareBtn">挑戰朋友</button>
+          <a class="next ig" id="commentBtn" href="#" target="_blank" rel="noopener">去 IG 留言比分數</a>
           <button class="next ghost" id="again">再玩一次</button>
-          <a class="next ig" id="igBtn" href="#" target="_blank" rel="noopener" hidden>追蹤我的 IG</a>
+        </div>
+        <div class="mini">
+          <div class="lbl">下一個挑戰你想玩？</div>
+          <div class="chips" id="vote"></div>
+          <div class="suggest-row">
+            <input type="text" id="suggestInput" placeholder="或打字建議其他主題（選填）" maxlength="40">
+            <button class="next ghost" id="suggestBtn">送出</button>
+          </div>
+        </div>
+        <div class="mini">
+          <div class="lbl">好玩嗎？</div>
+          <div class="chips emoji" id="rate"></div>
+          <div class="tiny" id="tinyLinks"><a id="moreGames" href="../">← 更多遊戲</a><span id="igTiny"> · <a id="igBtn" href="#" target="_blank" rel="noopener">追蹤 IG</a> · 想出題或給建議？私訊我</span></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="credit" id="credit">每次開始，題目和選項順序都會重新洗牌 · <a href="../">← 更多遊戲</a> · <a href="https://www.instagram.com/whatistruthqq/" target="_blank" rel="noopener">IG</a></div>
+  <div class="credit" id="credit">每次開始，題目和選項順序都會重新洗牌</div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -177,6 +216,9 @@ button{font:inherit; color:inherit; cursor:pointer}
 /* ========== 設定：改這兩行就好 ========== */
 const IG_URL = 'https://www.instagram.com/whatistruthqq/';          // 例：'https://www.instagram.com/你的帳號/'，留空就不顯示 IG 按鈕
 const IG_HANDLE = '@whatistruthqq';       // 例：'@你的帳號'，會出現在分享文字裡
+const LATEST_VIDEO_URL = 'https://www.instagram.com/reel/De1Qcm1q1Si/';// 最新一支影片的 IG 網址；「去留言」會開這支，留空就開 IG 首頁
+const MORE_GAMES_URL = '../'; // 「更多遊戲」連回首頁
+const NEXT_TOPICS = ['🍢 夜市小吃', '🗣️ 台語挑戰', '🚇 捷運站名']; // 投票選下一集的三個選項
 
 const QUESTIONS = [
   {img:'mountain', d:1, q:'台灣最高的山是哪一座？', o:['雪山','玉山','合歡山','阿里山'], a:1, f:'玉山主峰 3,952 公尺，比日本富士山（3,776 公尺）還高。'},
@@ -289,14 +331,48 @@ const $ = id => document.getElementById(id);
 const board = $('board');
 let deck = [], idx = -1, picked = null, score = 0;
 $('introIcons').innerHTML = ['mountain','bear','hsr'].map(k => `<div class="pic">${svg(k)}</div>`).join('');
-if(IG_URL){ $('igBtn').href = IG_URL; $('igBtn').hidden = false; }
+if(IG_URL){ $('igBtn').href = IG_URL; } else { $('igTiny').hidden = true; }
+$('moreGames').href = MORE_GAMES_URL;
+$('commentBtn').href = LATEST_VIDEO_URL || IG_URL || 'https://www.instagram.com/';
+if(!LATEST_VIDEO_URL && !IG_URL) $('commentBtn').hidden = true;
+const store = { get(k){ try{ return localStorage.getItem('twq.' + k); }catch(e){ return null; } }, set(k, v){ try{ localStorage.setItem('twq.' + k, v); }catch(e){} } };
 
+/* 挑戰朋友：網址帶 ?vs=分數 */
+const params = new URLSearchParams(location.search);
+let rival = parseInt(params.get('vs'), 10);
+if(!(rival >= 0 && rival <= QUESTIONS.length)) rival = null;
+if(rival !== null){
+  const rr = rankFor(rival, QUESTIONS.length);
+  $('vsIntro').textContent = `你的朋友拿了 ${rival} / ${QUESTIONS.length}（${rr[1]}），你能贏過他嗎？`;
+  $('vsIntro').hidden = false; $('start').textContent = '接受挑戰';
+  track('challenge_open', {rival_score: rival});
+}
+function shareUrl(){ const u = new URL(location.href); u.hash = ''; u.search = ''; u.searchParams.set('vs', score); return u.toString(); }
+
+/* 投票 & 評分（結果只送到 GA4） */
+function chips(el, items, key, event, paramName){
+  const done = store.get(key);
+  el.innerHTML = items.map(t => `<button class="chip${done === t ? ' on' : ''}" data-v="${t}">${t}</button>`).join('');
+  el.classList.toggle('done', !!done);
+  el.onclick = e => { const b = e.target.closest('.chip'); if(!b || store.get(key)) return;
+    store.set(key, b.dataset.v); track(event, {[paramName]: b.dataset.v}); chips(el, items, key, event, paramName); toast('收到，謝謝！'); };
+}
+chips($('vote'), NEXT_TOPICS, 'vote:' + NEXT_TOPICS.join('|'), 'next_topic_vote', 'topic');
+$('suggestBtn').onclick = () => {
+  const v = $('suggestInput').value.trim();
+  if(!v) return;
+  track('next_topic_vote', {topic: v});
+  $('suggestInput').value = '';
+  toast('收到，謝謝！');
+};
+$('suggestInput').addEventListener('keydown', e => { if(e.key === 'Enter') $('suggestBtn').click(); });
+
+function rankFor(s, n){ return [...RANKS].reverse().find(([min]) => s >= Math.round(min * n / 20)); }
 function shuffle(a){ for(let i = a.length - 1; i > 0; i--){ const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function newDeck(){
   deck = shuffle(QUESTIONS.map((q, n) => { const right = q.o[q.a]; const o = shuffle([...q.o]); return {...q, n, o, a:o.indexOf(right)}; }));
   const e = deck.findIndex(q => q.d === 1); if(e > 0) [deck[0], deck[e]] = [deck[e], deck[0]];
 }
-function rankFor(s, n){ return [...RANKS].reverse().find(([min]) => s >= Math.round(min * n / 20)); }
 function render(){
   const n = deck.length || QUESTIONS.length;
   board.dataset.mode = idx < 0 ? 'intro' : idx >= n ? 'end' : 'play';
@@ -306,6 +382,9 @@ function render(){
   if(idx >= n){
     $('final').innerHTML = `${score}<small> / ${n}</small>`;
     const r = rankFor(score, n); $('rank').textContent = r[1]; $('rankLine').textContent = r[2];
+    if(rival !== null){ $('vsResult').hidden = false;
+      $('vsResult').textContent = score > rival ? `你贏了朋友（${rival} 分）！快去嗆他 😎` : score === rival ? `跟朋友平手（${rival} 分），再來一場？` : `輸給朋友（${rival} 分）了… 再挑戰一次？`; }
+    chips($('rate'), ['😕', '🙂', '🤩'], 'rate:' + roundId, 'quiz_rating', 'rating');
     return;
   }
   if(idx < 0) return;
@@ -318,6 +397,7 @@ function render(){
     const cls = picked === null ? '' : i === q.a ? 'right' : i === picked ? 'wrong' : '';
     return `<button class="opt ${cls}" data-i="${i}" ${picked !== null ? 'tabindex="-1"' : ''}><span class="k">${'ABCD'[i]}</span><span class="t">${t}</span></button>`;
   }).join('');
+  $('flag').hidden = picked === null || flagged.has(q.n);
   if(picked === null){ $('fact').innerHTML = '<span class="hint">選一個答案</span>'; $('next').hidden = true; }
   else {
     $('fact').innerHTML = `<strong>${picked === q.a ? '答對了！' : '答案是 ' + 'ABCD'[q.a]}</strong>${q.f}`;
@@ -330,7 +410,10 @@ function choose(i){
   track('question_answered', {question_no: idx + 1, question_id: 'q' + (q.n + 1), question_text: q.q, correct: ok});
   render();
 }
-function start(){ newDeck(); idx = 0; score = 0; picked = null; track('quiz_start'); render(); }
+let roundId = 0; const flagged = new Set();
+function start(){ newDeck(); idx = 0; score = 0; picked = null; roundId = Date.now(); track('quiz_start', {challenged: rival !== null}); render(); }
+$('flag').onclick = () => { const q = deck[idx]; if(!q) return; flagged.add(q.n);
+  track('question_flag', {question_id: 'q' + (q.n + 1), question_text: q.q}); toast('收到，我會再檢查這題，謝謝！'); render(); };
 function go(){
   const m = board.dataset.mode;
   if(m === 'intro') return start();
@@ -341,10 +424,10 @@ function go(){
 }
 function shareText(){
   const r = rankFor(score, deck.length);
-  return `我在「台灣人必答常識題」答對 ${score}/${deck.length} 題，是「${r[1]}」！你能答對幾題？\n${location.href.split('#')[0]}${IG_HANDLE ? '\n' + IG_HANDLE : ''}`;
+  return `我在「台灣人必答常識題」答對 ${score}/${deck.length} 題，是「${r[1]}」！你能贏過我嗎？\n${shareUrl()}${IG_HANDLE ? '\n' + IG_HANDLE : ''}`;
 }
 async function share(){
-  const text = shareText(); track('share_click', {score});
+  const text = shareText(); track('share_click', {score, type: 'challenge'});
   try{ if(navigator.share){ await navigator.share({text}); return; } }catch(e){ if(e && e.name === 'AbortError') return; }
   try{ await navigator.clipboard.writeText(text); toast('已複製，貼到限動或留言吧！'); }
   catch(e){ toast('複製失敗，請手動截圖分享'); }
@@ -353,7 +436,14 @@ $('opts').addEventListener('click', e => { const b = e.target.closest('.opt'); i
 $('next').onclick = go; $('start').onclick = go;
 $('again').onclick = () => { track('play_again'); start(); };
 $('shareBtn').onclick = share;
-$('igBtn').addEventListener('click', () => track('ig_click'));
+$('igBtn').addEventListener('click', () => track('ig_click', {location: 'end'}));
+$('moreGames').addEventListener('click', () => track('more_games_click'));
+$('commentBtn').addEventListener('click', () => {
+  const r = rankFor(score, deck.length);
+  const text = `${r[1]} ${score}/${deck.length} 🏆`;
+  try{ navigator.clipboard.writeText(text).then(() => toast('已複製留言，貼到影片底下吧！'), () => {}); }catch(e){}
+  track('comment_click', {score});
+});
 document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if(['1','2','3','4'].includes(k)) choose(+k - 1);
