@@ -110,6 +110,7 @@ footer a{text-decoration:underline; color:#d9cfb8}
 const GAMES = [
   { slug:'taiwan_quiz', title:'台灣人必答常識題', desc:'20 題台灣常識，你是觀光客還是台灣通？', meta:'20 題・約 3 分鐘', tags:['台灣','常識'], icon:'🏔️', status:'live' },
   { slug:'kpop_guess', title:'看童年照猜女團成員', desc:'小時候就這麼可愛？你能認出幾位？', meta:'10 題・約 2 分鐘', tags:['K-pop','猜猜看'], icon:'💖', status:'live' },
+  { slug:'https://ken52508.github.io/hxh-quiz/?q=hxh', title:'你有多懂獵人？', desc:'10 題獵人知識測驗，只有真粉絲答得出來', meta:'10 題・約 2 分鐘', tags:['獵人','知識'], icon:'🎯', status:'live' },
   { slug:'', title:'下一個挑戰', desc:'敬請期待，先追蹤 IG', meta:'', tags:[], icon:'❓', status:'soon' },
 ];
 
@@ -124,7 +125,8 @@ grid.innerHTML = GAMES.map(g => {
   const tags = g.tags.map(t => `<span class="tag">${t}</span>`).join('');
   const meta = g.meta ? `<div class="meta">${g.meta}</div>` : '';
   if(g.status === 'live'){
-    return `<a class="card" href="${g.slug}/" data-slug="${g.slug}">
+    const href = g.slug.startsWith('http') ? g.slug : g.slug + '/';
+    return `<a class="card" href="${href}" data-slug="${g.slug}">
       <div class="icon">${g.icon}</div>
       <h3>${g.title}</h3>
       <div class="desc">${g.desc}</div>
