@@ -44,7 +44,11 @@ button{font:inherit; color:inherit; cursor:pointer}
 .btn.ghost{background:var(--paper)}
 
 .games{padding-block:12px 36px}
-.games h2{font-family:var(--round); font-weight:400; font-size:1.6rem; margin:0 0 18px; text-align:center}
+.games-head{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin:0 0 18px}
+.games h2{font-family:var(--round); font-weight:400; font-size:1.6rem; margin:0}
+.btn.small{padding:8px 16px; font-size:.8rem; box-shadow:3px 3px 0 var(--ink)}
+.btn.small:hover{box-shadow:5px 5px 0 var(--ink)}
+.btn.small:active{box-shadow:1px 1px 0 var(--ink)}
 .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
 @media (min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
 @media (min-width:980px){.grid{grid-template-columns:repeat(4,1fr)}}
@@ -85,7 +89,10 @@ footer a{text-decoration:underline; color:#d9cfb8}
 
 <main>
   <section class="games wrap">
-    <h2>選一個挑戰</h2>
+    <div class="games-head">
+      <h2>選一個挑戰</h2>
+      <button class="btn ghost small" id="randomBtn">🎲 隨機挑一個</button>
+    </div>
     <div class="grid" id="grid"></div>
   </section>
 
@@ -153,6 +160,13 @@ grid.addEventListener('click', e => {
   if(!card) return;
   if(card.dataset.soon){ track('ig_click', {location:'soon_card'}); }
   else{ track('game_click', {slug: card.dataset.slug}); }
+});
+
+document.getElementById('randomBtn').addEventListener('click', () => {
+  const live = GAMES.filter(g => g.status === 'live');
+  const pick = live[Math.random() * live.length | 0];
+  track('random_pick_click', {slug: pick.slug});
+  location.href = pick.slug.startsWith('http') ? pick.slug : pick.slug + '/';
 });
 
 document.getElementById('igHeader').addEventListener('click', () => track('ig_click', {location:'header'}));
